@@ -1,0 +1,188 @@
+definitions:
+  github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError:
+    properties:
+      code:
+        enum:
+        - INVALID_REQUEST
+        - ' INTERNAL_ERROR'
+        - ' SCHEDULE_EXISTS'
+        - ' SLOT_ALREADY_BOOKED'
+        - ' FORBIDEN'
+        - ' NOT_FOUND'
+        type: string
+      message:
+        example: invalid request
+        type: string
+    type: object
+  github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError:
+    properties:
+      code:
+        enum:
+        - INTERNAL_ERROR
+        type: string
+      message:
+        example: internal server error
+        type: string
+    type: object
+  internal_features_auth_transport_http.DummyLoginDTO:
+    properties:
+      role:
+        example: user
+        type: string
+    type: object
+  internal_features_auth_transport_http.DummyLoginDTOResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_features_auth_transport_http.LoginDTO:
+    properties:
+      email:
+        example: useremail@gmail.com
+        type: string
+      password:
+        example: supersecretpass
+        type: string
+    type: object
+  internal_features_auth_transport_http.LoginDTOResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_features_auth_transport_http.RegisterDTO:
+    properties:
+      email:
+        example: useremail@gmail.com
+        type: string
+        x-order: "0"
+      password:
+        example: supersecretpass
+        type: string
+        x-order: "1"
+      role:
+        example: admin
+        type: string
+        x-order: "2"
+    type: object
+  internal_features_auth_transport_http.RegisterDTOResponse:
+    properties:
+      createdAt:
+        example: "2026-03-25T12:00:41.267Z"
+        type: string
+        x-order: "4"
+      email:
+        example: useremail@gmail.com
+        type: string
+        x-order: "1"
+      id:
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        type: string
+        x-order: "0"
+      password:
+        type: string
+        x-order: "2"
+      role:
+        example: admin
+        type: string
+        x-order: "3"
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  title: Poly Twitter Service
+  version: "1.0"
+paths:
+  /dummyLogin:
+    post:
+      consumes:
+      - application/json
+      description: 'Выдаёт тестовый JWT для указанной роли (admin / user). Для каждой
+        роли возвращается фиксированный UUID пользователя: один и тот же UUID для
+        всех запросов с ролью admin и один и тот же UUID для роли user.'
+      parameters:
+      - description: 'доступны роли: admin, user'
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_auth_transport_http.DummyLoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Тестовый токен
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.DummyLoginDTOResponse'
+        "400":
+          description: Неверный запрос (недопустимое значение роли)
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Получить тестовый JWT по роли
+      tags:
+      - Auth
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Авторизует пользователя по email и паролю, возвращает JWT. Для
+        авторизации в рамках теста - /dummyLogin.
+      parameters:
+      - description: тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_auth_transport_http.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная авторизация
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.LoginDTOResponse'
+        "401":
+          description: Неверные учётные данные
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Авторизация по email и паролю
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт нового пользователя и возвращает его данные.
+      parameters:
+      - description: тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_auth_transport_http.RegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь создан
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.RegisterDTOResponse'
+        "400":
+          description: Неверный запрос или email уже занят
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Регистрация пользователя
+      tags:
+      - Auth
+swagger: "2.0"
