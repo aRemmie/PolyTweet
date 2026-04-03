@@ -21,13 +21,24 @@ type CreatePostDTO struct {
 type CreatePostDTOResponse struct {
 	ID        string    `json:"id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=0"`
 	UserID    string    `json:"user_id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=1"`
-	Content   string    `json:"content" example:"Hello, Twitter clone!" extensions:"x-order=2"`
+	Content   string    `json:"content" example:"Hello, world!" extensions:"x-order=2"`
 	ParentID  *string   `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=3"`
 	ReplyTo   *string   `json:"reply_to" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=4"`
 	ImageURL  string    `json:"image_url" example:"https://example.com/image.jpg" extensions:"x-order=5"`
 	CreatedAt time.Time `json:"created_at" example:"2026-03-25T12:00:41.267Z" extensions:"x-order=6"`
 }
 
+// CreatePost godoc
+// @Summary Создание поста
+// @Description Создает пост длиной <= 280 слов
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Param request body CreatePostDTO true "тело запроса"
+// @Success 201 {object} CreatePostDTOResponse "Пост создан"
+// @Failure 400 {object} domain.CustomError "Неверный запрос или content > 280"
+// @Failure 500 {object} domain.InternalError "Внутренняя ошибка сервера"
+// @Router /posts/create [post]
 func (h *PostsHTTPHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -41,13 +52,7 @@ func (h *PostsHTTPHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := ctx.Value("userId").(string)
-	if !ok || userID == "" {
-		log.Error("error getting user id", zap.String("userId", userID))
-		respWriter.ErrorResponse(domain.UNAUTHORIZED, http.StatusUnauthorized)
-		return
-	}
-
+	userID := ctx.Value("userId").(string)
 	log.Debug("create post request for user", zap.Any("userId", userID))
 
 	post, err := h.PostsService.CreatePost(

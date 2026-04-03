@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
@@ -13,8 +14,12 @@ func (s *PostsService) CreatePost(ctx context.Context, post domain.Post) (*domai
 		return nil, fmt.Errorf("validate post: %w", domain.INVALID_REQUEST)
 	}
 
-	if post.Content == "" && post.ReplyTo == nil && post.ParentID == nil {
-		return nil, fmt.Errorf("post content or reply to is empty: %w", domain.INVALID_REQUEST)
+	if post.Content == "" {
+		return nil, fmt.Errorf("post content is empty: %w", domain.INVALID_REQUEST)
+	}
+
+	if utf8.RuneCountInString(post.Content) > 280 {
+		return nil, fmt.Errorf("post content is too long: %w", domain.INVALID_REQUEST)
 	}
 
 	post.ID = uuid.NewString()

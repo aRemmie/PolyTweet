@@ -80,6 +80,6 @@ func main() {
 	serv.RegisterSwagger()
 
 	if err = serv.Run(ctx); err != nil {
-		log.Error("server error occured", zap.Error(err))
+		log.Error("server error occurred", zap.Error(err))
 	}
 }

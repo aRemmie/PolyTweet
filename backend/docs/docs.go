@@ -107,6 +107,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/create": {
+            "post": {
+                "description": "Создает пост длиной \u003c= 280 слов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Создание поста",
+                "parameters": [
+                    {
+                        "description": "тело запроса",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_posts_transport_http.CreatePostDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Пост создан",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_posts_transport_http.CreatePostDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос или content \u003e 280",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "description": "Создаёт нового пользователя и возвращает его данные.",
@@ -276,6 +322,71 @@ const docTemplate = `{
                     "example": "2026-03-25T12:00:41.267Z"
                 }
             }
+        },
+        "internal_features_posts_transport_http.CreatePostDTO": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "Hello, world!"
+                },
+                "parent_id": {
+                    "type": "string",
+                    "x-order": "1",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "reply_to": {
+                    "type": "string",
+                    "x-order": "2",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "image_url": {
+                    "type": "string",
+                    "x-order": "3",
+                    "example": "https://example.com/image.jpg"
+                }
+            }
+        },
+        "internal_features_posts_transport_http.CreatePostDTOResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                },
+                "user_id": {
+                    "type": "string",
+                    "x-order": "1",
+                    "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                },
+                "content": {
+                    "type": "string",
+                    "x-order": "2",
+                    "example": "Hello, world!"
+                },
+                "parent_id": {
+                    "type": "string",
+                    "x-order": "3",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "reply_to": {
+                    "type": "string",
+                    "x-order": "4",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "image_url": {
+                    "type": "string",
+                    "x-order": "5",
+                    "example": "https://example.com/image.jpg"
+                },
+                "created_at": {
+                    "type": "string",
+                    "x-order": "6",
+                    "example": "2026-03-25T12:00:41.267Z"
+                }
+            }
         }
     }
 }`
@@ -287,7 +398,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Poly Twitter Service",
-	Description:      "",
+	Description:      "Аналог Twitter, разработанный в рамках проекта по дисциплине Архитектура Программных Систем",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
