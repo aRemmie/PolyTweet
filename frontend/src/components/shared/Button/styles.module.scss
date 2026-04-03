@@ -1,0 +1,25 @@
+.buttonCustom {
+  background-color: transparent;
+  outline: none;
+  padding: 0.5rem 3rem;
+  font-weight: 500;
+  cursor: pointer;
+  max-height: 2.5rem;
+}
+
+.default {
+  font: var(--font-m);
+  font-weight: 500;
+  border: solid 1px;
+  border-color: var(--secondary-color);
+  border-radius: 18px;
+  color: var(--primary-color);
+  letter-spacing: 1px;
+}
+
+.transparent {
+  font: var(--font-s);
+  font-weight: 500;
+  border: none;
+  color: var(--text-covered);
+}

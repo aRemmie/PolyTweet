@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "baseUrl": ".",
+    "paths": {
+      "@components/*" : ["./src/components/*"],
+      "@assets/*" : ["./src/assets/*"],
+      "@models/*" : ["./src/models/*"],
+      "@services/*" : ["./src/services/*"],
+      "@api/*" : ["./src/app/api/*"],
+    },
+    "noImplicitAny": true,
+    "module": "ESNext",
+    "target": "es5",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}

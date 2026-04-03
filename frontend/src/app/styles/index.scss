@@ -1,0 +1,15 @@
+@use "variables/global" as *;
+@use "reset" as *;
+@use "themes/dark" as *;
+@use "themes/normal" as *;
+@use "fonts/index" as *;
+
+.app {
+  font: var(--font-m);
+
+  background: var(--bg-color);
+
+  color: var(--primary-color);
+
+  min-height: 100vh;
+}

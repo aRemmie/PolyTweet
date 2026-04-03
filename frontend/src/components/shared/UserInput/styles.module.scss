@@ -1,0 +1,27 @@
+.field {
+  background-color: var(--bg-color);
+  border: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  border-color: var(--border-color);
+  padding: 10px 18px;
+  font: var(--font-s);
+  width: 100%;
+  transition: border .3s ease;
+  &::placeholder {
+    color: var(--border-color);
+    font: var(--font-s);
+    justify-self: center;
+    align-self: center;
+    font-weight: 400;
+    transition: padding-bottom .3s ease;
+  }
+
+  &::placeholder:focus {
+    padding-bottom: -10px;
+  }
+
+  &:focus {
+    border-color: var(--border-color-focused);
+  }
+}
