@@ -21,6 +21,7 @@ type PostsService interface {
 		page string,
 		pageSize string,
 	) ([]domain.Post, *domain.Pagination, error)
+	DeletePost(ctx context.Context, userID, postID string) error
 }
 
 func NewPostsHandler(postsService PostsService) *PostsHTTPHandler {
@@ -47,6 +48,12 @@ func (h *PostsHTTPHandler) Routes() []server.Route {
 			Method:               http.MethodGet,
 			URL:                  "/posts/users/{UserId}",
 			Handler:              h.GetPostsByUser,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               http.MethodDelete,
+			URL:                  "/posts/{PostId}/delete",
+			Handler:              h.DeletePost,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
 	}

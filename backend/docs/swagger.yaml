@@ -136,6 +136,13 @@ definitions:
         type: string
         x-order: "1"
     type: object
+  internal_features_posts_transport_http.DeletePostDTOResponse:
+    properties:
+      message:
+        type: string
+      post_id:
+        type: string
+    type: object
   internal_features_posts_transport_http.GetPostByIdDTOResponse:
     properties:
       content:
@@ -271,6 +278,45 @@ paths:
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
       summary: Поиск поста по ID
+      tags:
+      - Posts
+  /posts/{PostId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пост, если запрос на удаление исходит от автора поста
+      parameters:
+      - description: Post ID (UUID)
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        format: uuid
+        in: path
+        name: postId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пост успешно удален
+          schema:
+            $ref: '#/definitions/internal_features_posts_transport_http.DeletePostDTOResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "401":
+          description: Неверные учетные данные
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "404":
+          description: Пост не найден
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Удаление поста
       tags:
       - Posts
   /posts/create:
