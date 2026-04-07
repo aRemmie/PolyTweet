@@ -2,11 +2,13 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /build
 
-COPY . .
+COPY go.mod go.sum ./
 
 RUN go mod download
 
-RUN go build -o polytweet cmd/polytweet/main.go
+COPY . .
+
+RUN CGO_ENABLED=0 go build -o polytweet cmd/polytweet/main.go
 
 FROM alpine:3.23 AS final
 

@@ -137,6 +137,13 @@ const docTemplate = `{
                         "description": "Размер страницы",
                         "name": "page_size",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -169,7 +176,7 @@ const docTemplate = `{
         },
         "/posts/create": {
             "post": {
-                "description": "Создает пост длиной \u003c= 280 слов",
+                "description": "Создает пост длиной \u003c= 280 символов",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,13 +189,20 @@ const docTemplate = `{
                 "summary": "Создание поста",
                 "parameters": [
                     {
-                        "description": "тело запроса",
+                        "description": "parent_id и reply_to необязательные параметры",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/internal_features_posts_transport_http.CreatePostDTO"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -199,74 +213,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Неверный запрос или content \u003e 280",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
-                        }
-                    },
-                    "401": {
-                        "description": "Неверные учетные данные",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
-                        }
-                    }
-                }
-            }
-        },
-        "/posts/users/{UserId}": {
-            "get": {
-                "description": "Ищет посты пользователя по ID с поддержкой пагинации через параметры page и pageSize.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Posts"
-                ],
-                "summary": "Поиск постов пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "UserId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Номер страницы",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 30,
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 15,
-                        "description": "Размер страницы",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Посты найдены",
-                        "schema": {
-                            "$ref": "#/definitions/internal_features_posts_transport_http.GetPostByIdDTOResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный запрос",
+                        "description": "Неверный запрос или content \u003e 280 символов",
                         "schema": {
                             "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
                         }
@@ -301,10 +248,19 @@ const docTemplate = `{
                 "summary": "Поиск поста по ID",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Post ID",
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "description": "Post ID (UUID)",
                         "name": "PostId",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -361,8 +317,15 @@ const docTemplate = `{
                         "format": "uuid",
                         "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                         "description": "Post ID (UUID)",
-                        "name": "postId",
+                        "name": "PostId",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -445,6 +408,82 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{UserId}/posts": {
+            "get": {
+                "description": "Ищет посты пользователя по ID с поддержкой пагинации через параметры page и pageSize.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Поиск постов пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "description": "User ID (UUID)",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Номер страницы",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 15,
+                        "description": "Размер страницы",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Посты найдены",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_posts_transport_http.GetPostByIdDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные учетные данные",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -502,9 +541,16 @@ const docTemplate = `{
         },
         "github_com_tryingmyb3st_PolyTweet_internal_core_domain.Post": {
             "type": "object",
+            "required": [
+                "content",
+                "id",
+                "user_id"
+            ],
             "properties": {
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 280,
+                    "minLength": 1
                 },
                 "created_at": {
                     "type": "string"

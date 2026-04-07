@@ -18,7 +18,7 @@ type AuthRepository interface {
 
 type Cache interface {
 	GetUser(ctx context.Context, email string) (*domain.User, error)
-	SaveUser(ctx context.Context, user domain.User) error
+	SaveUser(user *domain.User) error
 }
 
 func NewAuthService(repo AuthRepository, cache Cache) *AuthService {

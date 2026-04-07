@@ -20,7 +20,8 @@ type DeletePostDTOResponse struct {
 // @Tags Posts
 // @Accept json
 // @Produce json
-// @Param postId path string true "Post ID (UUID)" Format(uuid) Example(3fa85f64-5717-4562-b3fc-2c963f66afa6)
+// @Param PostId path string true "Post ID (UUID)" Format(uuid) Example(3fa85f64-5717-4562-b3fc-2c963f66afa6)
+// @Param Authorization header string true "Bearer <jwt токен>"
 // @Success 200 {object} DeletePostDTOResponse "Пост успешно удален"
 // @Failure 400 {object} domain.CustomError "Неверный запрос"
 // @Failure 401 {object} domain.CustomError "Неверные учетные данные"

@@ -22,7 +22,8 @@ type PostsRepository interface {
 }
 
 type Cache interface {
-	SavePost(ctx context.Context, post domain.Post) (*domain.Post, error)
+	SavePost(post *domain.Post) error
+	GetPostByID(ctx context.Context, postID string) (*domain.Post, error)
 }
 
 func NewPostsService(postsRepo PostsRepository, cache Cache) *PostsService {

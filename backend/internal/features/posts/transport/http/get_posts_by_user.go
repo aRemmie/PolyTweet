@@ -24,9 +24,10 @@ type GetPostsByUserDTOResponse struct {
 // @Tags Posts
 // @Accept json
 // @Produce json
-// @Param UserId path int true "User ID"
+// @Param UserId path string true "User ID (UUID)" Format(uuid) Example(3fa85f64-5717-4562-b3fc-2c963f66afa6)
 // @Param page query int false "Номер страницы"  minimum(1)  default(1)
 // @Param page_size query int false "Размер страницы"  minimum(1)  maximum(30)  default(15)
+// @Param Authorization header string true "Bearer <jwt токен>"
 // @Success 200 {object} GetPostByIdDTOResponse "Посты найдены"
 // @Failure 400 {object} domain.CustomError "Неверный запрос"
 // @Failure 401 {object} domain.CustomError "Неверные учетные данные"

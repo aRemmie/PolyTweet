@@ -9,8 +9,11 @@ import (
 )
 
 type Cache interface {
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
+	Get(ctx context.Context, key string) *redis.StringCmd
 	HGetAll(ctx context.Context, key string) *redis.MapStringStringCmd
-	HSet(ctx context.Context, key string, expiration time.Duration, values ...interface{}) *redis.IntCmd
+	HSet(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
+	Pipelined(ctx context.Context, fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
 }
 
 type CacheClient struct {
@@ -39,8 +42,20 @@ func (c *CacheClient) HGetAll(ctx context.Context, key string) *redis.MapStringS
 	return c.Client.HGetAll(ctx, key)
 }
 
-func (c *CacheClient) HSet(ctx context.Context, key string, expiration time.Duration, values ...interface{}) *redis.IntCmd {
+func (c *CacheClient) HSet(ctx context.Context, key string, values ...interface{}) *redis.IntCmd {
 	result := c.Client.HSet(ctx, key, values...)
-	c.Expire(ctx, key, expiration)
+	c.Client.Expire(ctx, key, 6*time.Hour)
 	return result
+}
+
+func (c *CacheClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
+	return c.Client.Set(ctx, key, value, expiration)
+}
+
+func (c *CacheClient) Get(ctx context.Context, key string) *redis.StringCmd {
+	return c.Client.Get(ctx, key)
+}
+
+func (c *CacheClient) Pipelined(ctx context.Context, fn func(redis.Pipeliner) error) ([]redis.Cmder, error) {
+	return c.Client.Pipelined(ctx, fn)
 }

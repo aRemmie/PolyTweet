@@ -1,6 +1,8 @@
 package auth_models
 
-import "time"
+import (
+	"time"
+)
 
 type UserModel struct {
 	ID        string    `redis:"id"`

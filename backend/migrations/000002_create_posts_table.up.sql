@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS posts (
 
     CONSTRAINT fk_posts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_posts_parent FOREIGN KEY (parent_id) REFERENCES posts(id) ON DELETE CASCADE,
-    CONSTRAINT fk_posts_reply_to FOREIGN KEY (reply_to) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_posts_reply_to FOREIGN KEY (reply_to) REFERENCES posts(id) ON DELETE CASCADE
 );

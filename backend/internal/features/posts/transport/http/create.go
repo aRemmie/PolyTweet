@@ -34,7 +34,8 @@ type CreatePostDTOResponse struct {
 // @Tags Posts
 // @Accept json
 // @Produce json
-// @Param request body CreatePostDTO true "тело запроса"
+// @Param request body CreatePostDTO true "parent_id и reply_to необязательные параметры"
+// @Param Authorization header string true "Bearer <jwt токен>"
 // @Success 201 {object} CreatePostDTOResponse "Пост создан"
 // @Failure 400 {object} domain.CustomError "Неверный запрос или content > 280 символов"
 // @Failure 401 {object} domain.CustomError "Неверные учетные данные"

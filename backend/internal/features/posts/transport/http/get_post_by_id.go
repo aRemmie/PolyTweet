@@ -30,7 +30,8 @@ type GetPostByIdDTOResponse struct {
 // @Tags Posts
 // @Accept json
 // @Produce json
-// @Param PostId path int true "Post ID"
+// @Param PostId path string true "Post ID (UUID)" Format(uuid) Example(3fa85f64-5717-4562-b3fc-2c963f66afa6)
+// @Param Authorization header string true "Bearer <jwt токен>"
 // @Success 200 {object} GetPostByIdDTOResponse "Пост найден"
 // @Failure 400 {object} domain.CustomError "Неверный запрос"
 // @Failure 401 {object} domain.CustomError "Неверные учетные данные"

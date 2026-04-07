@@ -22,6 +22,7 @@ type GetLastWeekPostsDTOResponse struct {
 // @Produce json
 // @Param page query int false "Номер страницы"  minimum(1)  default(1)
 // @Param page_size query int false "Размер страницы"  minimum(1)  maximum(30)  default(15)
+// @Param Authorization header string true "Bearer <jwt токен>"
 // @Success 200 {object} GetLastWeekPostsDTOResponse "Посты найдены"
 // @Failure 400 {object} domain.CustomError "Неверный запрос"
 // @Failure 401 {object} domain.CustomError "Неверные учетные данные"

@@ -2,27 +2,31 @@ package auth_cache
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
+	auth_models "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository"
 )
 
 func (c *AuthCache) GetUser(ctx context.Context, email string) (*domain.User, error) {
-	data, err := c.client.HGetAll(ctx, email).Result()
-	if err != nil {
-		return nil, err
+	var result auth_models.UserModel
+
+	key := fmt.Sprintf("user:%s", email)
+
+	if err := c.client.HGetAll(ctx, key).Scan(&result); err != nil {
+		return nil, fmt.Errorf("scan from cache: %w", err)
 	}
 
-	if len(data) == 0 {
+	if result == (auth_models.UserModel{}) {
 		return nil, redis.Nil
 	}
 
-	// TODO ADD CREATED_AT
-
 	return &domain.User{
-		ID:       data["id"],
-		Email:    data["email"],
-		Password: data["password"],
-		Role:     data["role"],
+		ID:        result.ID,
+		Email:     email,
+		Password:  result.Password,
+		Role:      result.Role,
+		CreatedAt: result.CreatedAt,
 	}, nil
 }

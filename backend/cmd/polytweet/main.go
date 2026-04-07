@@ -64,17 +64,18 @@ func main() {
 
 	log.Debug("initializing auth service")
 	authRepo := auth_repository.NewAuthRepository(pool)
-	postsRepo := posts_repository.NewPostsRepository(pool)
 	cacheAuthRepo := auth_cache.NewAuthCache(cache)
-	cachePostsRepo := posts_cache.NewPostsCache(cache)
-
 	authService := auth_service.NewAuthService(authRepo, cacheAuthRepo)
-	postsService := posts_service.NewPostsService(postsRepo, cachePostsRepo)
-
 	authHandler := auth_transport.NewAuthHandler(authService)
-	postsHandler := posts_transport.NewPostsHandler(postsService)
 
 	serv.RegisterRoutes(authHandler.Routes()...)
+
+	log.Debug("initializing posts service")
+	postsRepo := posts_repository.NewPostsRepository(pool)
+	cachePostsRepo := posts_cache.NewPostsCache(cache)
+	postsService := posts_service.NewPostsService(postsRepo, cachePostsRepo)
+	postsHandler := posts_transport.NewPostsHandler(postsService)
+
 	serv.RegisterRoutes(postsHandler.Routes()...)
 
 	serv.RegisterSwagger()

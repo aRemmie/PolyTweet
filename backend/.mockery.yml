@@ -22,15 +22,6 @@ require-template-schema-exists: true
 template: testify
 template-schema: '{{.Template}}.schema.json'
 packages:
-    backend-assignment-avito/internal/features/auth/service:
-        config:
-            all: true
-    backend-assignment-avito/internal/features/bookings/service:
-        config:
-            all: true
-    backend-assignment-avito/internal/features/slots/service:
-        config:
-            all: true
-    backend-assignment-avito/internal/features/schedules/service:
+    github.com/tryingmyb3st/PolyTweet/internal/features/auth/service:
         config:
             all: true

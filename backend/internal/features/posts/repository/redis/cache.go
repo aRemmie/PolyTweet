@@ -1,4 +1,4 @@
-package redis
+package posts_cache
 
 import cache "github.com/tryingmyb3st/PolyTweet/internal/core/repository/redis"
 

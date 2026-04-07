@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/rs/cors"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/middleware"
 
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -64,9 +65,18 @@ func (s *HTTPServer) RegisterSwagger() {
 }
 
 func (s *HTTPServer) Run(ctx context.Context) error {
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{
+			"http://localhost:8080",
+			"http://localhost:3000",
+		},
+		AllowedHeaders: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+	})
+
 	server := &http.Server{
 		Addr:    s.cfg.Addr,
-		Handler: s.mux,
+		Handler: cors.Handler(s.mux),
 	}
 
 	s.mux.HandleFunc("GET /_info", HandleInfo)
