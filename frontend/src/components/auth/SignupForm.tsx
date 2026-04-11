@@ -1,5 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { Navigate, useNavigate } from 'react-router-dom';
 import TextField from '../shared/TextField/TextField';
 import Button from '../shared/Button/Button';
 import Select from '../shared/Select/Select';
@@ -25,6 +26,7 @@ const roleOptions = [
 ];
 
 const SignupForm = () => {
+    const navigate = useNavigate();
     const register = useAuthStore((state) => state.register);
     const isLoading = useAuthStore((state) => state.isLoading);
 
@@ -38,7 +40,8 @@ const SignupForm = () => {
         onSubmit: async (values: SignupFormValues) => {
             try {
                 await register(values.email, values.password, values.role);
-                toast.success('Registration successful! Please login.');
+                toast.success('ПОБЕДАААА');
+                navigate('/feed');
                 formik.resetForm();
             } catch (error: any) {
                 const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';

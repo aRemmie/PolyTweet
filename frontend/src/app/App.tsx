@@ -1,18 +1,24 @@
-import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import React, { useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
 import AppRouter from "./router/AppRouter";
-import './styles/index.scss';
+import './styles/global.scss';
 
 const App = () => {
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
+        const initialTheme = savedTheme || 'dark';
+        document.documentElement.setAttribute('data-theme', initialTheme);
+    }, []);
+
     return (
-        <div className="app dark">
+        <div className="app">
             <ToastContainer
-                position={"top-center"}
+                position="top-center"
                 hideProgressBar={true}
-                theme={'dark'}
+                theme="dark"
                 autoClose={1000}
             />
-            <AppRouter/>
+            <AppRouter />
         </div>
     );
 };

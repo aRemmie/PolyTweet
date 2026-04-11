@@ -1,5 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { Navigate, useNavigate } from 'react-router-dom';
 import TextField from '../shared/TextField/TextField';
 import Button from '../shared/Button/Button';
 import { useAuthStore } from '../../stores/useAuthStore';
@@ -17,6 +18,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const SigninForm = () => {
+    const navigate = useNavigate();
     const login = useAuthStore((state) => state.login);
     const isLoading = useAuthStore((state) => state.isLoading);
 
@@ -30,6 +32,7 @@ const SigninForm = () => {
             try {
                 await login(values.email, values.password);
                 toast.success('Login successful!');
+                navigate('/feed');
             } catch (error) {
                 toast.error('Login failed.');
             }

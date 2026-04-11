@@ -18,11 +18,9 @@ $api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        console.log(`${config.method?.toUpperCase()} ${config.url}`);
         return config;
     },
     (error) => {
-        console.error('Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -31,46 +29,22 @@ $api.interceptors.response.use(
     (response) => {
         return response;
     },
-    (error) => {        
+    (error) => {
         if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
-            toast.error('Cannot connect to backend server!\n\nPlease start the server on port 8080', {
+            toast.error('Cannot connect to backend server.', {
                 position: "top-right",
                 autoClose: 8000,
             });
         }
-        
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             toast.error('Session expired. Please login again.');
             setTimeout(() => {
-                window.location.href = '/login';
+                window.location.href = '/auth';
             }, 1500);
         }
-        
         return Promise.reject(error);
     }
 );
 
 export default $api;
-
-export interface RegisterRequest {
-    email: string;
-    password: string;
-    role: string;
-}
-
-export interface RegisterResponse {
-    id: string;
-    email: string;
-    role: string;
-    createdAt: string;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface LoginResponse {
-    token: string;
-}

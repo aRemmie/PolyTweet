@@ -5,12 +5,14 @@
 .switchSection {
     margin-top: 32px;
     padding-top: 24px;
-    border-top: 1px solid #2f3336;
+    border-top: 1px solid var(--auth-switch-border);
+    transition: border-color 0.3s ease;
 }
 
 .switchText {
     text-align: center;
-    color: #71767b;
+    color: var(--auth-switch-text-color);
     font-size: 15px;
     margin-bottom: 16px;
+    transition: color 0.3s ease;
 }

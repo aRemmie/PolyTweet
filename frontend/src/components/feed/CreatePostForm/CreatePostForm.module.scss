@@ -1,0 +1,50 @@
+.createPostForm {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.avatarAndInput {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), #0a5c8e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.inputWrapper {
+    flex: 1;
+}
+
+.charCounter {
+    text-align: right;
+    margin-top: 8px;
+}
+
+.counter {
+    font-size: 13px;
+    color: var(--text-secondary);
+    
+    &.over {
+        color: var(--error);
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    margin-top: 8px;
+}

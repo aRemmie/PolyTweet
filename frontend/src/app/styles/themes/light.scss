@@ -1,0 +1,75 @@
+[data-theme="light"] {
+    /* Backgrounds */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F7F9F9;
+    --bg-tertiary: #f2f7f8;
+    --bg-card: #F7F9F9;
+    --bg-search: #EFF3F4;
+    --bg-modal: #FFFFFF;
+    --bg-hover: rgba(0, 0, 0, 0.03);
+    
+    /* Text colors */
+    --text-primary: #0F1419;
+    --text-secondary: #536471;
+    --text-tertiary: #71767B;
+    --text-disabled: #8899A6;
+    
+    /* Borders */
+    --border-color: #EFF3F4;
+    --border-light: #EFF3F4;
+    --border-focus: #1DA1F2;
+    
+    /* Primary colors */
+    --primary-blue: #1DA1F2;
+    --primary-blue-hover: #1a8cd8;
+    --primary-blue-active: #0c6b9e;
+    --primary-blue-disabled: #8ec8f5;
+    
+    /* Status colors */
+    --success: #00BA7C;
+    --error: #F4245E;
+    --warning: #FFAD1F;
+    --info: #1DA1F2;
+    
+    /* Button specific */
+    --button-primary-bg: #1DA1F2;
+    --button-primary-text: #FFFFFF;
+    --button-primary-hover: #1a8cd8;
+    --button-secondary-bg: transparent;
+    --button-secondary-text: #1DA1F2;
+    --button-secondary-border: #1DA1F2;
+    --button-secondary-hover: rgba(29, 161, 242, 0.1);
+    --button-disabled-bg: #EFF3F4;
+    --button-disabled-text: #8899A6;
+    
+    /* Input specific */
+    --input-bg: #FFFFFF;
+    --input-text: #0F1419;
+    --input-placeholder: #71767B;
+    --input-border: #EFF3F4;
+    --input-border-focus: #1DA1F2;
+    --input-error: #F4245E;
+    
+    /* Select specific */
+    --select-bg: #FFFFFF;
+    --select-text: #0F1419;
+    --select-border: #EFF3F4;
+    --select-option-bg: #FFFFFF;
+    --select-option-hover: #F7F9F9;
+    --select-option-text: #0F1419;
+    
+    /* Modal specific */
+    --modal-bg: #FFFFFF;
+    --modal-overlay: rgba(0, 0, 0, 0.4);
+    --modal-border: #EFF3F4;
+    
+    /* Auth specific */
+    --auth-title-color: #0F1419;
+    --auth-switch-text-color: #96abbb;
+    --auth-switch-border: #EFF3F4;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+}

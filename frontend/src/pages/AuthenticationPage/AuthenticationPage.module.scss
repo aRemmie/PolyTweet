@@ -2,12 +2,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
-    background-color: #000000;
+    background: var(--bg-primary);
+    transition: background-color 0.3s ease;
 }
 
 .leftSection {
     position: relative;
-    background: radial-gradient(circle at center, #1d9bf0 0%, #0a5c8e 100%);
+    background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--primary-blue-active) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,21 +61,13 @@
     width: 350px;
     height: 350px;
     display: block;
-    
     margin-bottom: 0;
     transition: transform 0.3s ease;
+    color: #FFFFFF;
     
     &:hover {
         transform: scale(1.05);
     }
-}
-
-.logoContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
 }
 
 .rightSection {
@@ -92,8 +85,9 @@
 .mainTitle {
     font-size: 64px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 48px;
+    transition: color 0.3s ease;
     
     @media (max-width: 768px) {
         font-size: 40px;
@@ -103,8 +97,9 @@
 .subTitle {
     font-size: 31px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 32px;
+    transition: color 0.3s ease;
 }
 
 .buttonsContainer {
@@ -116,7 +111,8 @@
 }
 
 .loginText {
-    color: #71767b;
+    color: var(--text-secondary);
     font-size: 15px;
     margin-bottom: 16px;
+    transition: color 0.3s ease;
 }

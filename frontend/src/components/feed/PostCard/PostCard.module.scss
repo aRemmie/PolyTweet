@@ -1,0 +1,79 @@
+.postCard {
+    background: #000000;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #080808;
+        border-color: #1d9bf0;
+    }
+}
+
+.postHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.authorInfo {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1d9bf0, #0a5c8e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+}
+
+.authorDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.authorEmail {
+    font-weight: 600;
+    color: #e7e9ea;
+    font-size: 15px;
+}
+
+.postDate {
+    font-size: 13px;
+    color: #71767b;
+}
+
+.postContent {
+    color: #e7e9ea;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 52px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.deleteButton {
+    padding: 4px 12px;
+    font-size: 13px;
+    background: transparent;
+    border-color: #dc2626;
+    color: #dc2626;
+
+    &:hover {
+        background: rgba(220, 38, 38, 0.1);
+        border-color: #dc2626;
+    }
+}

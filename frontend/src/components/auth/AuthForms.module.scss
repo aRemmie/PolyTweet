@@ -5,9 +5,10 @@
 .title {
     font-size: 31px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--auth-title-color);
     margin-bottom: 32px;
     text-align: center;
+    transition: color 0.3s ease;
 }
 
 .dateSection {
@@ -16,7 +17,7 @@
 
 .sectionLabel {
     display: block;
-    color: #e7e9ea;
+    color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 8px;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Button from '../../components/shared/Button/Button';
 import AuthModal from '../../components/auth/AuthModal';
-import styles from './Authentication.module.scss';
+import styles from './AuthenticationPage.module.scss';
 
-const Authentication = () => {
+const AuthenticationPage = () => {
     const [openAuthModal, setOpenAuthModal] = useState(false);
     const [isSignup, setIsSignup] = useState(true);
 
@@ -60,4 +60,4 @@ const Authentication = () => {
     );
 };
 
-export default Authentication;
+export default AuthenticationPage;

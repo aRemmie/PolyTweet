@@ -29,7 +29,9 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     set({ isLoading: true });
                     const response = await AuthService.login({ email, password });
-                    localStorage.setItem('token', response.token);
+                    if (response.token) {
+                        localStorage.setItem('token', response.token);
+                    }
                     set({ email: email, isAuth: true, isLoading: false });
                 } catch (e) {
                     console.log(e);
@@ -42,8 +44,7 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     set({ isLoading: true });
                     const response = await AuthService.register({ email, password, role });
-                    console.log('Registration response:', response);
-                    set({ userId: response.id, email: email, isLoading: false });
+                    set({ userId: response.id || null, email: email, isLoading: false });
                 } catch (e) {
                     console.log(e);
                     set({ isLoading: false });
