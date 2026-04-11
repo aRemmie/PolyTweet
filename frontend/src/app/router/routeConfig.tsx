@@ -1,6 +1,6 @@
 import { RouteProps } from "react-router-dom";
-import AuthenticationPage from "../../pages/AuthenticationPage/AuthenticationPage";
-import FeedPage from "../../pages/FeedPage/FeedPage";
+import AuthenticationPageAsync from "@pages/AuthenticationPage/AuthenticationPage.async";
+import FeedPageAsync from "@pages/FeedPage/FeedPage.async";
 
 export enum AppRoutes {
     AUTH = 'auth',
@@ -15,10 +15,10 @@ export const RoutePath: Record<AppRoutes, string> = {
 export const routeConfig: Record<AppRoutes, RouteProps> = {
     [AppRoutes.AUTH]: {
         path: RoutePath.auth,
-        element: <AuthenticationPage />
+        element: <AuthenticationPageAsync />
     },
     [AppRoutes.FEED]: {
         path: RoutePath.feed,
-        element: <FeedPage />
+        element: <FeedPageAsync />
     }
 }
