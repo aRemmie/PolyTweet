@@ -7,7 +7,7 @@ import (
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
 )
 
-func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) error {
+func (r *LikesRepository) RemoveLike(ctx context.Context, like domain.Like) error {
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.ConnPool.OpTimeout())
 	defer cancel()
 
@@ -20,25 +20,24 @@ func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) error {
 		_ = tx.Rollback(ctxTimeout)
 	}()
 
-	insertQuery := `
-	INSERT INTO likes
-	VALUES ($1, $2)
-	ON CONFLICT (user_id, post_id) DO NOTHING;
+	deleteQuery := `
+	DELETE FROM likes 
+	WHERE user_id = $1 AND post_id = $2;
 	`
 
-	cmdTag, err := tx.Exec(ctxTimeout, insertQuery, like.UserID, like.PostID)
+	cmdTag, err := tx.Exec(ctxTimeout, deleteQuery, like.UserID, like.PostID)
 	if err != nil {
-		return fmt.Errorf("add like: %w", err)
+		return fmt.Errorf("remove like: %w", err)
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return tx.Commit(ctxTimeout)
+		return fmt.Errorf("like not found")
 	}
 
 	updatePostQuery := `
 	UPDATE posts
-	SET likes_count = likes_count + 1
-	WHERE id = $1;
+	SET likes_count = likes_count - 1
+	WHERE id = $1 AND likes_count > 0;
 	`
 
 	cmdTag, err = tx.Exec(ctxTimeout, updatePostQuery, like.PostID)
@@ -50,5 +49,5 @@ func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) error {
 		return fmt.Errorf("post not found: %w", err)
 	}
 
-	return tx.Commit(ctxTimeout)
+	return tx.Commit(ctx)
 }
