@@ -18,7 +18,7 @@ func (r *PostsRepository) GetPostsByUser(
 	defer cancel()
 
 	query := `
-	SELECT id, user_id, content, parent_id, reply_to, image_url, created_at
+	SELECT id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at
 	FROM posts
 	WHERE user_id = $1
 	ORDER BY created_at DESC
@@ -38,6 +38,7 @@ func (r *PostsRepository) GetPostsByUser(
 			&model.ID,
 			&model.UserID,
 			&model.Content,
+			&model.LikesCount,
 			&model.ParentID,
 			&model.ReplyTo,
 			&model.ImageURL,
@@ -47,13 +48,14 @@ func (r *PostsRepository) GetPostsByUser(
 			return nil, fmt.Errorf("scan returning posts: %w", err)
 		}
 		post := domain.Post{
-			ID:        model.ID,
-			UserID:    model.UserID,
-			Content:   model.Content,
-			ParentID:  model.ParentID,
-			ReplyTo:   model.ReplyTo,
-			ImageURL:  model.ImageURL,
-			CreatedAt: model.CreatedAt,
+			ID:         model.ID,
+			UserID:     model.UserID,
+			Content:    model.Content,
+			LikesCount: model.LikesCount,
+			ParentID:   model.ParentID,
+			ReplyTo:    model.ReplyTo,
+			ImageURL:   model.ImageURL,
+			CreatedAt:  model.CreatedAt,
 		}
 		posts = append(posts, post)
 	}

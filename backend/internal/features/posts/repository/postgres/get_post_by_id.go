@@ -13,7 +13,7 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 	defer cancel()
 
 	query := `
-	SELECT id, user_id, content, parent_id, reply_to, image_url, created_at
+	SELECT id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at
 	FROM posts
 	WHERE id = $1;
 	`
@@ -25,6 +25,7 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 		&model.ID,
 		&model.UserID,
 		&model.Content,
+		&model.LikesCount,
 		&model.ParentID,
 		&model.ReplyTo,
 		&model.ImageURL,
@@ -36,12 +37,13 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 	}
 
 	return &domain.Post{
-		ID:        model.ID,
-		UserID:    model.UserID,
-		Content:   model.Content,
-		ParentID:  model.ParentID,
-		ReplyTo:   model.ReplyTo,
-		ImageURL:  model.ImageURL,
-		CreatedAt: model.CreatedAt,
+		ID:         model.ID,
+		UserID:     model.UserID,
+		Content:    model.Content,
+		LikesCount: model.LikesCount,
+		ParentID:   model.ParentID,
+		ReplyTo:    model.ReplyTo,
+		ImageURL:   model.ImageURL,
+		CreatedAt:  model.CreatedAt,
 	}, nil
 }

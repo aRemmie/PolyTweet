@@ -15,13 +15,14 @@ type GetPostByIdDTO struct {
 }
 
 type GetPostByIdDTOResponse struct {
-	ID        string    `json:"id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=0"`
-	UserID    string    `json:"user_id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=1"`
-	Content   string    `json:"content" example:"Hello, world!" extensions:"x-order=2"`
-	ParentID  *string   `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=3"`
-	ReplyTo   *string   `json:"reply_to" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=4"`
-	ImageURL  string    `json:"image_url" example:"https://example.com/image.jpg" extensions:"x-order=5"`
-	CreatedAt time.Time `json:"created_at" example:"2026-03-25T12:00:41.267Z" extensions:"x-order=6"`
+	ID         string    `json:"id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=0"`
+	UserID     string    `json:"user_id" example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=1"`
+	Content    string    `json:"content" example:"Hello, world!" extensions:"x-order=2"`
+	LikesCount int       `json:"likes_count" example:"0" extensions:"x-order=3"`
+	ParentID   *string   `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=4"`
+	ReplyTo    *string   `json:"reply_to" example:"123e4567-e89b-12d3-a456-426614174000" extensions:"x-order=5"`
+	ImageURL   string    `json:"image_url" example:"https://example.com/image.jpg" extensions:"x-order=6"`
+	CreatedAt  time.Time `json:"created_at" example:"2026-03-25T12:00:41.267Z" extensions:"x-order=7"`
 }
 
 // GetPostById godoc
@@ -57,13 +58,14 @@ func (h *PostsHTTPHandler) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := GetPostByIdDTOResponse{
-		ID:        post.ID,
-		UserID:    post.UserID,
-		Content:   post.Content,
-		ParentID:  post.ParentID,
-		ReplyTo:   post.ReplyTo,
-		ImageURL:  post.ImageURL,
-		CreatedAt: post.CreatedAt,
+		ID:         post.ID,
+		UserID:     post.UserID,
+		Content:    post.Content,
+		LikesCount: post.LikesCount,
+		ParentID:   post.ParentID,
+		ReplyTo:    post.ReplyTo,
+		ImageURL:   post.ImageURL,
+		CreatedAt:  post.CreatedAt,
 	}
 
 	respWriter.JSONResponse(resp, http.StatusOK)

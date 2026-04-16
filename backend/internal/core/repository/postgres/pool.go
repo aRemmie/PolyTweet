@@ -14,7 +14,7 @@ type Pool interface {
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 	Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error)
-
+	Begin(ctx context.Context) (pgx.Tx, error)
 	OpTimeout() time.Duration
 }
 
@@ -62,4 +62,8 @@ func (p *ConnectionPool) Exec(ctx context.Context, sql string, args ...interface
 
 func (p *ConnectionPool) OpTimeout() time.Duration {
 	return p.opTimeout
+}
+
+func (p *ConnectionPool) Begin(ctx context.Context) (pgx.Tx, error) {
+	return p.Pool.Begin(ctx)
 }
