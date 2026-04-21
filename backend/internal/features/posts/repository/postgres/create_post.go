@@ -15,7 +15,7 @@ func (r *PostsRepository) CreatePost(ctx context.Context, post domain.Post) (*do
 	query := `
 	INSERT INTO posts(id, user_id, content, parent_id, reply_to, image_url)
 	VALUES($1, $2, $3, $4, $5, $6)
-	RETURNING id, user_id, content, parent_id, reply_to, image_url, created_at;
+	RETURNING id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at;
 	`
 
 	row := r.ConnPool.QueryRow(
@@ -34,6 +34,7 @@ func (r *PostsRepository) CreatePost(ctx context.Context, post domain.Post) (*do
 		&model.ID,
 		&model.UserID,
 		&model.Content,
+		&model.LikesCount,
 		&model.ParentID,
 		&model.ReplyTo,
 		&model.ImageURL,
@@ -45,12 +46,13 @@ func (r *PostsRepository) CreatePost(ctx context.Context, post domain.Post) (*do
 	}
 
 	return &domain.Post{
-		ID:        model.ID,
-		UserID:    model.UserID,
-		Content:   model.Content,
-		ParentID:  model.ParentID,
-		ReplyTo:   model.ReplyTo,
-		ImageURL:  model.ImageURL,
-		CreatedAt: model.CreatedAt,
+		ID:         model.ID,
+		UserID:     model.UserID,
+		Content:    model.Content,
+		LikesCount: model.LikesCount,
+		ParentID:   model.ParentID,
+		ReplyTo:    model.ReplyTo,
+		ImageURL:   model.ImageURL,
+		CreatedAt:  model.CreatedAt,
 	}, nil
 }

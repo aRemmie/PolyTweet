@@ -8,6 +8,10 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
+	likes_repository "github.com/tryingmyb3st/PolyTweet/internal/features/likes/repository/postgres"
+	likes_cache "github.com/tryingmyb3st/PolyTweet/internal/features/likes/repository/redis"
+	likes_service "github.com/tryingmyb3st/PolyTweet/internal/features/likes/service"
+	likes_transport "github.com/tryingmyb3st/PolyTweet/internal/features/likes/transport"
 	posts_repository "github.com/tryingmyb3st/PolyTweet/internal/features/posts/repository/postgres"
 	posts_cache "github.com/tryingmyb3st/PolyTweet/internal/features/posts/repository/redis"
 	posts_service "github.com/tryingmyb3st/PolyTweet/internal/features/posts/service"
@@ -77,6 +81,14 @@ func main() {
 	postsHandler := posts_transport.NewPostsHandler(postsService)
 
 	serv.RegisterRoutes(postsHandler.Routes()...)
+
+	log.Debug("initializing likes service")
+	likesRepo := likes_repository.NewLikesRepository(pool)
+	cacheLikesRepo := likes_cache.NewLikesCache(cache)
+	likesService := likes_service.NewLikesService(likesRepo, *postsService, cacheLikesRepo)
+	likesHandler := likes_transport.NewLikesHandler(likesService)
+
+	serv.RegisterRoutes(likesHandler.Routes()...)
 
 	serv.RegisterSwagger()
 

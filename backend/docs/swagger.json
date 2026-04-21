@@ -355,6 +355,134 @@
                 }
             }
         },
+        "/posts/{PostId}/like": {
+            "post": {
+                "description": "Добавляет лайк на пост",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Лайк на пост",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "description": "Post ID (UUID)",
+                        "name": "PostId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Лайк добавлен",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_likes_transport.LikePostDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные учетные данные",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "404": {
+                        "description": "Такой пост не был найден",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Убирает лайк на пост",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Убрать лайк на пост",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "description": "Post ID (UUID)",
+                        "name": "PostId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Лайк убран",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_likes_transport.LikePostDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные учетные данные",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "404": {
+                        "description": "Такой пост не был найден",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "description": "Создаёт нового пользователя и возвращает его данные.",
@@ -553,6 +681,9 @@
                 "image_url": {
                     "type": "string"
                 },
+                "likes_count": {
+                    "type": "integer"
+                },
                 "parent_id": {
                     "type": "string"
                 },
@@ -651,6 +782,20 @@
                 }
             }
         },
+        "internal_features_likes_transport.LikePostDTOResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "post_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "internal_features_posts_transport_http.CreatePostDTO": {
             "type": "object",
             "properties": {
@@ -694,24 +839,29 @@
                     "x-order": "2",
                     "example": "Hello, world!"
                 },
-                "parent_id": {
-                    "type": "string",
+                "likes_count": {
+                    "type": "integer",
                     "x-order": "3",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                    "example": 0
                 },
-                "reply_to": {
+                "parent_id": {
                     "type": "string",
                     "x-order": "4",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
-                "image_url": {
+                "reply_to": {
                     "type": "string",
                     "x-order": "5",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "image_url": {
+                    "type": "string",
+                    "x-order": "6",
                     "example": "https://example.com/image.jpg"
                 },
                 "created_at": {
                     "type": "string",
-                    "x-order": "6",
+                    "x-order": "7",
                     "example": "2026-03-25T12:00:41.267Z"
                 }
             }
@@ -759,24 +909,29 @@
                     "x-order": "2",
                     "example": "Hello, world!"
                 },
-                "parent_id": {
-                    "type": "string",
+                "likes_count": {
+                    "type": "integer",
                     "x-order": "3",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                    "example": 0
                 },
-                "reply_to": {
+                "parent_id": {
                     "type": "string",
                     "x-order": "4",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
-                "image_url": {
+                "reply_to": {
                     "type": "string",
                     "x-order": "5",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "image_url": {
+                    "type": "string",
+                    "x-order": "6",
                     "example": "https://example.com/image.jpg"
                 },
                 "created_at": {
                     "type": "string",
-                    "x-order": "6",
+                    "x-order": "7",
                     "example": "2026-03-25T12:00:41.267Z"
                 }
             }

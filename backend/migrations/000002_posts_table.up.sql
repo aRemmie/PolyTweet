@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS posts (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
     content TEXT,
+    likes_count INTEGER DEFAULT 0,
     parent_id VARCHAR(36),
     reply_to VARCHAR(36),
     image_url TEXT,
