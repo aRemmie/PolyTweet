@@ -1,6 +1,6 @@
 .tweet {
     border-bottom: 1px solid var(--border-color);
-    transition: background 0.2s;
+    transition: background 0.2s, border-bottom-color 0.3s ease;
     
     &:hover {
         background: var(--bg-hover);
@@ -47,12 +47,14 @@
         font-weight: 700;
         font-size: 15px;
         color: var(--text-primary);
+        transition: color 0.3s ease;
     }
     
     .username, .dot, .time {
         font-weight: 400;
         font-size: 14px;
         color: var(--text-secondary);
+        transition: color 0.3s ease;
     }
 }
 
@@ -67,6 +69,7 @@
         margin: 0;
         white-space: pre-wrap;
         word-wrap: break-word;
+        transition: color 0.3s ease;
     }
 }
 

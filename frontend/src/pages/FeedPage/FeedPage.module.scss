@@ -3,19 +3,24 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: 30px;
     position: relative;
+    transition: background-color 0.3s ease;
 }
 
 .feed {
-    width: 600px;
-    margin-left: 285px;
-    margin-right: 370px;
+    width: 100%;
+    max-width: 600px;
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
+    flex-shrink: 1;
+    transition: all 0.3s ease;
 }
 
 .header {
@@ -27,33 +32,37 @@
     border-bottom: 1px solid var(--border-color);
     z-index: 10;
     flex-shrink: 0;
-    
+    transition: all 0.3s ease;
+
     h1 {
         font-weight: 700;
         font-size: 19px;
         line-height: 23px;
         margin: 0;
         color: var(--text-primary);
+        transition: color 0.3s ease;
     }
 }
 
 .scrollableContent {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    
+    transition: inherit;
+
     &::-webkit-scrollbar {
         width: 8px;
+        transition: all 0.3s ease;
     }
-    
+
     &::-webkit-scrollbar-track {
         background: var(--bg-secondary);
+        transition: inherit;
     }
-    
+
     &::-webkit-scrollbar-thumb {
         background: var(--border-color);
         border-radius: 4px;
-        
+        transition: inherit;
+
         &:hover {
             background: var(--text-secondary);
         }
@@ -64,6 +73,7 @@
     height: 10px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .loading {

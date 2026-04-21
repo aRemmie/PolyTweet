@@ -11,8 +11,8 @@ import styles from './FeedPage.module.scss';
 
 const FeedPage: React.FC = () => {
     const navigate = useNavigate();
-    const isAuth = useAuthStore(state => state.isAuth);
-    const userId = useAuthStore(state => state.userId);
+    const isAuth = useAuthStore((state) => state.isAuth);
+    const userId = useAuthStore((state) => state.userId);
     const { posts, isLoading, fetchFeed, createPost, deletePost } = usePostStore();
     const [isCreating, setIsCreating] = useState(false);
 
@@ -22,12 +22,6 @@ const FeedPage: React.FC = () => {
             return;
         }
         fetchFeed(1, 20);
-        
-        // Блокируем скролл body
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
     }, [isAuth, navigate]);
 
     const handleCreatePost = async (content: string) => {
@@ -58,21 +52,21 @@ const FeedPage: React.FC = () => {
     return (
         <div className={styles.feedPage}>
             <LeftPanel />
-            
+
             <div className={styles.feed}>
                 <div className={styles.header}>
                     <h1>Home</h1>
                 </div>
-                
+
                 <div className={styles.scrollableContent}>
                     <CreatePostForm onSubmit={handleCreatePost} isLoading={isCreating} />
-                    
+
                     <div className={styles.spacer} />
-                    
+
                     {isLoading && posts.length === 0 ? (
                         <div className={styles.loading}>Loading posts...</div>
                     ) : (
-                        posts.map(post => (
+                        posts.map((post) => (
                             <PostItem
                                 key={post.id}
                                 post={post}
@@ -83,7 +77,7 @@ const FeedPage: React.FC = () => {
                     )}
                 </div>
             </div>
-            
+
             <RightPanel />
         </div>
     );

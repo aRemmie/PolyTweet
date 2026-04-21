@@ -1,13 +1,14 @@
 .leftPanel {
     width: 275px;
     height: 100vh;
-    position: fixed;
-    left: 88px;
+    position: sticky;
     top: 0;
     background: var(--bg-primary);
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    margin-right: 10px;
 }
 
 .logo {
@@ -54,6 +55,7 @@
         width: 30px;
         height: 30px;
         color: var(--text-primary);
+        transition: color 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -65,6 +67,7 @@
         font-size: 19px;
         line-height: 23px;
         color: var(--text-primary);
+        transition: color 0.3s ease;
     }
 
     &.active .label {
@@ -129,6 +132,7 @@
             font-weight: 700;
             font-size: 16px;
             color: var(--text-primary);
+            transition: color 0.3s ease;
         }
 
         .username {
@@ -136,6 +140,7 @@
             font-size: 16px;
             color: var(--text-secondary);
             letter-spacing: -0.017em;
+            transition: color 0.3s ease;
         }
     }
 
@@ -147,6 +152,7 @@
         display: flex;
         align-items: center;
         color: var(--text-primary);
+        transition: color 0.3s ease;
         
         svg {
             width: 24px;

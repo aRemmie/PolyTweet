@@ -1,6 +1,7 @@
 .createPostForm {
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
+    transition: border-bottom-color 0.3s ease;
 }
 
 .avatarAndInput {
@@ -35,7 +36,8 @@
 .counter {
     font-size: 13px;
     color: var(--text-secondary);
-    
+    transition: color 0.3s ease;
+
     &.over {
         color: var(--error);
     }
@@ -45,6 +47,7 @@
     display: flex;
     justify-content: flex-end;
     border-top: 1px solid var(--border-color);
+    transition: border-top-color 0.3s ease;
     padding-top: 12px;
     margin-top: 8px;
 }

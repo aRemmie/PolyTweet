@@ -15,7 +15,12 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Scrollbar styles */
+html {
+    scrollbar-color: var(--border-color) var(--bg-secondary);
+    scrollbar-width: thin;
+    transition: scrollbar-color 0.3s ease;
+}
+
 ::-webkit-scrollbar {
     width: 8px;
 }
