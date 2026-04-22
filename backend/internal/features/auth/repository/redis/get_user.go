@@ -27,6 +27,8 @@ func (c *AuthCache) GetUser(ctx context.Context, email string) (*domain.User, er
 		Email:     email,
 		Password:  result.Password,
 		Role:      result.Role,
+		AvatarURL: result.AvatarURL.String,
+		Bio:       result.Bio.String,
 		CreatedAt: result.CreatedAt,
 	}, nil
 }

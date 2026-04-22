@@ -14,6 +14,8 @@ type User struct {
 	Email     string `validate:"email"`
 	Password  string
 	Role      string `validate:"oneof=admin user"`
+	AvatarURL string
+	Bio       string
 	CreatedAt time.Time
 }
 

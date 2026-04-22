@@ -491,6 +491,110 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile/avatar": {
+            "post": {
+                "description": "Загрузить аватарку в SeaweedFS и обновить профиль пользователя",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Загрузить аватарку пользотвалея",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Файл аватарки",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.UploadAvatarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/update": {
+            "put": {
+                "description": "Обновить профиль пользователя (аватарка и о себе)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить профиль пользователя",
+                "parameters": [
+                    {
+                        "description": "Информация профиля",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.UpdateProfileRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.UpdateProfileResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "description": "Создаёт нового пользователя и возвращает его данные.",
@@ -600,6 +704,57 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Неверные учетные данные",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{UserId}/profile": {
+            "get": {
+                "description": "Получить профиль пользователя с постами по id пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Получить профиль пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.ProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
                         "schema": {
                             "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
                         }
@@ -741,6 +896,73 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_features_auth_transport_http.PostResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "24b6b463-266f-4916-b199-f833e6e334ce"
+                },
+                "content": {
+                    "type": "string",
+                    "x-order": "1",
+                    "example": "..."
+                },
+                "user_id": {
+                    "type": "string",
+                    "x-order": "2",
+                    "example": "bba83b30-a3ba-4fa8-a6de-79c27b3f5946"
+                },
+                "created_at": {
+                    "type": "string",
+                    "x-order": "3",
+                    "example": "timestamp"
+                }
+            }
+        },
+        "internal_features_auth_transport_http.ProfileResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "http://localhost:8333/6,0307364665"
+                },
+                "email": {
+                    "type": "string",
+                    "x-order": "1",
+                    "example": "lol@gmail.com"
+                },
+                "role": {
+                    "type": "string",
+                    "x-order": "2",
+                    "example": "admin"
+                },
+                "avatar_url": {
+                    "type": "string",
+                    "x-order": "3",
+                    "example": "http://localhost:8333/6,0307364665"
+                },
+                "bio": {
+                    "type": "string",
+                    "x-order": "4",
+                    "example": "lol"
+                },
+                "created_at": {
+                    "type": "string",
+                    "x-order": "5",
+                    "example": "timestamp"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_features_auth_transport_http.PostResponse"
+                    },
+                    "x-order": "6"
+                }
+            }
+        },
         "internal_features_auth_transport_http.RegisterDTO": {
             "type": "object",
             "properties": {
@@ -787,6 +1009,38 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "4",
                     "example": "2026-03-25T12:00:41.267Z"
+                }
+            }
+        },
+        "internal_features_auth_transport_http.UpdateProfileRequest": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "http://localhost:8333/6,0307364665"
+                },
+                "bio": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "lol"
+                }
+            }
+        },
+        "internal_features_auth_transport_http.UpdateProfileResp": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_features_auth_transport_http.UploadAvatarResponse": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string",
+                    "example": "http://localhost:8333/6,0307364665"
                 }
             }
         },

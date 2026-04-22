@@ -13,6 +13,8 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
+      seaweedfs:
+        condition: service_started
 
   db-postgres:
     image: postgres:18.1-bookworm
@@ -22,13 +24,15 @@ services:
      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
-      - ./db/postgres/data:/var/lib/postgresql  
+      - ./db/postgres/data:/var/lib/postgresql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
+    ports:
+      - "5432:5432"
 
 
   db-migrations:
@@ -54,6 +58,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-storage
+    ports:
+      - "9333:9333"
+      - "8333:8080"
+    command: "server -dir=/data"
+    volumes:
+      - ./db/seaweedfs/data:/data
     restart: always
 
   swagger:

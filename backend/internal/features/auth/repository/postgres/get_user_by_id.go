@@ -8,17 +8,17 @@ import (
 	auth_models "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository"
 )
 
-func (r *AuthRepository) GetUser(ctx context.Context, email string) (*domain.User, error) {
+func (r *AuthRepository) GetUserByID(ctx context.Context, userID string) (*domain.User, error) {
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.ConnPool.OpTimeout())
 	defer cancel()
 
 	query := `
 	SELECT id, email, password, role, avatar_url, bio, created_at
 	FROM users
-	WHERE email=$1
+	WHERE id=$1
 	`
 
-	row := r.ConnPool.QueryRow(ctxTimeout, query, email)
+	row := r.ConnPool.QueryRow(ctxTimeout, query, userID)
 
 	var model auth_models.UserModel
 	err := row.Scan(

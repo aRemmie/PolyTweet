@@ -85,6 +85,57 @@ definitions:
       token:
         type: string
     type: object
+  internal_features_auth_transport_http.PostResponse:
+    properties:
+      content:
+        example: '...'
+        type: string
+        x-order: "1"
+      created_at:
+        example: timestamp
+        type: string
+        x-order: "3"
+      id:
+        example: 24b6b463-266f-4916-b199-f833e6e334ce
+        type: string
+        x-order: "0"
+      user_id:
+        example: bba83b30-a3ba-4fa8-a6de-79c27b3f5946
+        type: string
+        x-order: "2"
+    type: object
+  internal_features_auth_transport_http.ProfileResponse:
+    properties:
+      avatar_url:
+        example: http://localhost:8333/6,0307364665
+        type: string
+        x-order: "3"
+      bio:
+        example: lol
+        type: string
+        x-order: "4"
+      created_at:
+        example: timestamp
+        type: string
+        x-order: "5"
+      email:
+        example: lol@gmail.com
+        type: string
+        x-order: "1"
+      id:
+        example: http://localhost:8333/6,0307364665
+        type: string
+        x-order: "0"
+      posts:
+        items:
+          $ref: '#/definitions/internal_features_auth_transport_http.PostResponse'
+        type: array
+        x-order: "6"
+      role:
+        example: admin
+        type: string
+        x-order: "2"
+    type: object
   internal_features_auth_transport_http.RegisterDTO:
     properties:
       email:
@@ -121,6 +172,28 @@ definitions:
         example: admin
         type: string
         x-order: "3"
+    type: object
+  internal_features_auth_transport_http.UpdateProfileRequest:
+    properties:
+      avatar_url:
+        example: http://localhost:8333/6,0307364665
+        type: string
+        x-order: "0"
+      bio:
+        example: lol
+        type: string
+        x-order: "0"
+    type: object
+  internal_features_auth_transport_http.UpdateProfileResp:
+    properties:
+      message:
+        type: string
+    type: object
+  internal_features_auth_transport_http.UploadAvatarResponse:
+    properties:
+      avatar_url:
+        example: http://localhost:8333/6,0307364665
+        type: string
     type: object
   internal_features_likes_transport.LikePostDTOResponse:
     properties:
@@ -566,6 +639,75 @@ paths:
       summary: Создание поста
       tags:
       - Posts
+  /profile/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загрузить аватарку в SeaweedFS и обновить профиль пользователя
+      parameters:
+      - description: Файл аватарки
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.UploadAvatarResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Загрузить аватарку пользотвалея
+      tags:
+      - Profile
+  /profile/update:
+    put:
+      consumes:
+      - application/json
+      description: Обновить профиль пользователя (аватарка и о себе)
+      parameters:
+      - description: Информация профиля
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_auth_transport_http.UpdateProfileRequest'
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный запрос
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.UpdateProfileResp'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Обновить профиль пользователя
+      tags:
+      - Profile
   /register:
     post:
       consumes:
@@ -650,4 +792,38 @@ paths:
       summary: Поиск постов пользователя
       tags:
       - Posts
+  /users/{UserId}/profile:
+    get:
+      consumes:
+      - application/json
+      description: Получить профиль пользователя с постами по id пользователя
+      parameters:
+      - description: User ID
+        in: path
+        name: UserId
+        required: true
+        type: string
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.ProfileResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Получить профиль пользователя
+      tags:
+      - Profile
 swagger: "2.0"

@@ -22,6 +22,7 @@ import (
 	"github.com/tryingmyb3st/PolyTweet/internal/core/logger"
 	postgres_pool "github.com/tryingmyb3st/PolyTweet/internal/core/repository/postgres"
 	cache "github.com/tryingmyb3st/PolyTweet/internal/core/repository/redis"
+	"github.com/tryingmyb3st/PolyTweet/internal/core/storage"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/transport/server"
 	auth_repository "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository/postgres"
 	auth_cache "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository/redis"
@@ -69,13 +70,17 @@ func main() {
 	log.Debug("initializing auth service")
 	authRepo := auth_repository.NewAuthRepository(pool)
 	cacheAuthRepo := auth_cache.NewAuthCache(cache)
-	authService := auth_service.NewAuthService(authRepo, cacheAuthRepo)
+	postsRepo := posts_repository.NewPostsRepository(pool)
+
+	storageCfg := storage.NewConfigMust()
+	storageClient := storage.NewSeaweedFSClient(storageCfg.MasterURL, storageCfg.PublicURL, storageCfg.VolumeServer)
+
+	authService := auth_service.NewAuthService(authRepo, cacheAuthRepo, postsRepo, storageClient)
 	authHandler := auth_transport.NewAuthHandler(authService)
 
 	serv.RegisterRoutes(authHandler.Routes()...)
 
 	log.Debug("initializing posts service")
-	postsRepo := posts_repository.NewPostsRepository(pool)
 	cachePostsRepo := posts_cache.NewPostsCache(cache)
 	postsService := posts_service.NewPostsService(postsRepo, cachePostsRepo)
 	postsHandler := posts_transport.NewPostsHandler(postsService)
