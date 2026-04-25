@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { AuthService } from "../services/AuthService";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { AuthService } from '../services/AuthService';
 
 interface AuthState {
     isAuth: boolean;
@@ -55,15 +55,15 @@ export const useAuthStore = create<AuthState>()(
             logout: () => {
                 localStorage.removeItem('token');
                 set({ isAuth: false, userId: null, email: null });
-            }
+            },
         }),
         {
             name: 'auth-storage',
             partialize: (state) => ({
                 isAuth: state.isAuth,
                 userId: state.userId,
-                email: state.email
+                email: state.email,
             }),
-        }
-    )
+        },
+    ),
 );

@@ -1,0 +1,128 @@
+.postDetailPage {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    display: flex;
+    justify-content: center;
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: 30px;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex-shrink: 1;
+    transition: all 0.3s ease;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-primary);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    z-index: 10;
+
+    h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text-primary);
+    }
+}
+
+.backButton {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: var(--bg-hover);
+    }
+}
+
+.postContainer {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.replySection {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+}
+
+.replyButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-blue);
+    color: var(--button-primary-text);
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: var(--primary-blue-hover);
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+        color: currentColor;
+    }
+}
+
+.repliesList {
+    padding: 0;
+}
+
+.repliesTitle {
+    padding: 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.noReplies {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}

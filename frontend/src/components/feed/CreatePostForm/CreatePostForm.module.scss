@@ -1,53 +1,85 @@
 .createPostForm {
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
-    transition: border-bottom-color 0.3s ease;
 }
 
-.avatarAndInput {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
+.inputContainer {
+    position: relative;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-blue), #0a5c8e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+.postInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
     font-size: 18px;
-    color: white;
-    flex-shrink: 0;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+
+    &::placeholder {
+        color: var(--input-placeholder);
+    }
 }
 
-.inputWrapper {
-    flex: 1;
-}
-
-.charCounter {
+.charCount {
     text-align: right;
-    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
 }
 
-.counter {
-    font-size: 13px;
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+.imageInput {
+    margin-top: 12px;
 
-    &.over {
-        color: var(--error);
+    .urlInput {
+        width: 100%;
+        background: var(--input-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: var(--input-text);
+        font-size: 14px;
+        transition: all 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        &::placeholder {
+            color: var(--input-placeholder);
+        }
     }
 }
 
 .actions {
     display: flex;
-    justify-content: flex-end;
-    border-top: 1px solid var(--border-color);
-    transition: border-top-color 0.3s ease;
-    padding-top: 12px;
-    margin-top: 8px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+}
+
+.toolbarButton {
+    background: none;
+    border: none;
+    color: var(--primary-blue);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: var(--bg-hover);
+        color: var(--primary-blue-hover);
+    }
 }

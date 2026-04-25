@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
-import AppRouter from "./router/AppRouter";
+import AppRouter from './router/AppRouter';
 import './styles/global.scss';
 
 const App = () => {

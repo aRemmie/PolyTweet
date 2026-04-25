@@ -42,7 +42,7 @@ const SigninForm = () => {
     return (
         <form onSubmit={formik.handleSubmit} className={styles.form}>
             <h1 className={styles.title}>Sign in to PolyTweet</h1>
-            
+
             <TextField
                 name="email"
                 type="email"
@@ -53,7 +53,7 @@ const SigninForm = () => {
                 error={formik.errors.email}
                 touched={formik.touched.email}
             />
-            
+
             <TextField
                 name="password"
                 type="password"
@@ -64,7 +64,7 @@ const SigninForm = () => {
                 error={formik.errors.password}
                 touched={formik.touched.password}
             />
-            
+
             <Button type="submit" fullWidth isLoading={isLoading}>
                 Sign in
             </Button>

@@ -24,10 +24,10 @@ const FeedPage: React.FC = () => {
         fetchFeed(1, 20);
     }, [isAuth, navigate]);
 
-    const handleCreatePost = async (content: string) => {
+    const handleCreatePost = async (content: string, image_url?: string) => {
         setIsCreating(true);
         try {
-            await createPost(content);
+            await createPost(content, image_url);
             toast.success('Post created!');
         } catch (error) {
             toast.error('Failed to create post');
@@ -66,14 +66,21 @@ const FeedPage: React.FC = () => {
                     {isLoading && posts.length === 0 ? (
                         <div className={styles.loading}>Loading posts...</div>
                     ) : (
-                        posts.map((post) => (
-                            <PostItem
-                                key={post.id}
-                                post={post}
-                                onDelete={handleDeletePost}
-                                currentUserId={userId || undefined}
-                            />
-                        ))
+                        <>
+                            {posts.map((post) => (
+                                <PostItem
+                                    key={post.id}
+                                    post={post}
+                                    onDelete={handleDeletePost}
+                                    currentUserId={userId || undefined}
+                                />
+                            ))}
+                            {posts.length === 0 && !isLoading && (
+                                <div className={styles.empty}>
+                                    No posts yet. Be the first to post!
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
