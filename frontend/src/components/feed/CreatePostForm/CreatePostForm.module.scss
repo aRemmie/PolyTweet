@@ -1,6 +1,6 @@
 .createPostForm {
     padding: 16px;
-    border-bottom: 1px solid #2f3336;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .inputContainer {
@@ -11,7 +11,7 @@
     width: 100%;
     background: transparent;
     border: none;
-    color: #e7e9ea;
+    color: var(--text-primary);
     font-size: 18px;
     line-height: 1.5;
     resize: none;
@@ -19,14 +19,14 @@
     font-family: inherit;
 
     &::placeholder {
-        color: #71767b;
+        color: var(--input-placeholder);
     }
 }
 
 .charCount {
     text-align: right;
     font-size: 13px;
-    color: #71767b;
+    color: var(--text-tertiary);
     margin-top: 4px;
 }
 
@@ -35,16 +35,21 @@
 
     .urlInput {
         width: 100%;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid #2f3336;
+        background: var(--input-bg);
+        border: 1px solid var(--border-light);
         border-radius: 8px;
         padding: 8px 12px;
-        color: #e7e9ea;
+        color: var(--input-text);
         font-size: 14px;
+        transition: all 0.2s ease;
 
         &:focus {
             outline: none;
-            border-color: #1da1f2;
+            border-color: var(--border-focus);
+        }
+
+        &::placeholder {
+            color: var(--input-placeholder);
         }
     }
 }
@@ -64,7 +69,7 @@
 .toolbarButton {
     background: none;
     border: none;
-    color: #1da1f2;
+    color: var(--primary-blue);
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
@@ -74,6 +79,7 @@
     transition: background-color 0.2s;
 
     &:hover {
-        background-color: rgba(29, 161, 242, 0.1);
+        background-color: var(--bg-hover);
+        color: var(--primary-blue-hover);
     }
 }
