@@ -14,8 +14,9 @@ type LikesService struct {
 }
 
 type LikesRepository interface {
-	AddLike(ctx context.Context, like domain.Like) error
-	RemoveLike(ctx context.Context, like domain.Like) error
+	AddLike(ctx context.Context, like domain.Like) (int64, error)
+	RemoveLike(ctx context.Context, like domain.Like) (int64, error)
+	IsLiked(ctx context.Context, userID, postID string) (bool, error)
 }
 
 type Cache interface{}

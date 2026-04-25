@@ -7,13 +7,13 @@ import (
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
 )
 
-func (r *LikesRepository) RemoveLike(ctx context.Context, like domain.Like) error {
+func (r *LikesRepository) RemoveLike(ctx context.Context, like domain.Like) (int64, error) {
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.ConnPool.OpTimeout())
 	defer cancel()
 
 	tx, err := r.ConnPool.Begin(ctxTimeout)
 	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
+		return 0, fmt.Errorf("begin transaction: %w", err)
 	}
 
 	defer func() {
@@ -27,27 +27,29 @@ func (r *LikesRepository) RemoveLike(ctx context.Context, like domain.Like) erro
 
 	cmdTag, err := tx.Exec(ctxTimeout, deleteQuery, like.UserID, like.PostID)
 	if err != nil {
-		return fmt.Errorf("remove like: %w", err)
+		return 0, fmt.Errorf("remove like: %w", err)
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("like not found")
+		return 0, fmt.Errorf("like not found")
 	}
 
 	updatePostQuery := `
 	UPDATE posts
 	SET likes_count = likes_count - 1
-	WHERE id = $1 AND likes_count > 0;
+	WHERE id = $1 AND likes_count > 0
+	RETURNING likes_count;
 	`
 
-	cmdTag, err = tx.Exec(ctxTimeout, updatePostQuery, like.PostID)
+	var likesCount int64
+	err = tx.QueryRow(ctxTimeout, updatePostQuery, like.PostID).Scan(&likesCount)
 	if err != nil {
-		return fmt.Errorf("update likes_count: %w", err)
+		return 0, fmt.Errorf("update likes_count: %w", err)
 	}
 
-	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("post not found: %w", err)
+	if err = tx.Commit(ctxTimeout); err != nil {
+		return 0, fmt.Errorf("commit transaction: %w", err)
 	}
 
-	return tx.Commit(ctx)
+	return likesCount, nil
 }

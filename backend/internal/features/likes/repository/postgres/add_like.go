@@ -7,13 +7,13 @@ import (
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
 )
 
-func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) error {
+func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) (int64, error) {
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.ConnPool.OpTimeout())
 	defer cancel()
 
 	tx, err := r.ConnPool.Begin(ctxTimeout)
 	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
+		return 0, fmt.Errorf("begin transaction: %w", err)
 	}
 
 	defer func() {
@@ -28,27 +28,35 @@ func (r *LikesRepository) AddLike(ctx context.Context, like domain.Like) error {
 
 	cmdTag, err := tx.Exec(ctxTimeout, insertQuery, like.UserID, like.PostID)
 	if err != nil {
-		return fmt.Errorf("add like: %w", err)
+		return 0, fmt.Errorf("add like: %w", err)
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return tx.Commit(ctxTimeout)
+		var likesCount int64
+		countQuery := `SELECT likes_count FROM posts WHERE id = $1;`
+		err = tx.QueryRow(ctxTimeout, countQuery, like.PostID).Scan(&likesCount)
+		if err != nil {
+			return 0, fmt.Errorf("get likes count: %w", err)
+		}
+		return likesCount, tx.Commit(ctxTimeout)
 	}
 
 	updatePostQuery := `
 	UPDATE posts
 	SET likes_count = likes_count + 1
-	WHERE id = $1;
+	WHERE id = $1
+	RETURNING likes_count;
 	`
 
-	cmdTag, err = tx.Exec(ctxTimeout, updatePostQuery, like.PostID)
+	var likesCount int64
+	err = tx.QueryRow(ctxTimeout, updatePostQuery, like.PostID).Scan(&likesCount)
 	if err != nil {
-		return fmt.Errorf("update likes_count: %w", err)
+		return 0, fmt.Errorf("update likes_count: %w", err)
 	}
 
-	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("post not found: %w", err)
+	if err = tx.Commit(ctxTimeout); err != nil {
+		return 0, fmt.Errorf("commit transaction: %w", err)
 	}
 
-	return tx.Commit(ctxTimeout)
+	return likesCount, nil
 }

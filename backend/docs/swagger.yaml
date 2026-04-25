@@ -197,12 +197,19 @@ definitions:
     type: object
   internal_features_likes_transport.LikePostDTOResponse:
     properties:
+      likes_count:
+        type: integer
       message:
         type: string
       post_id:
         type: string
       user_id:
         type: string
+    type: object
+  internal_features_likes_transport.LikeStatusResponseDTO:
+    properties:
+      is_liked:
+        type: boolean
     type: object
   internal_features_posts_transport_http.CreatePostDTO:
     properties:
@@ -551,6 +558,38 @@ paths:
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
       summary: Лайк на пост
+      tags:
+      - Likes
+  /posts/{PostId}/like/status:
+    get:
+      description: Проверяет, лайкнут ли пост текущим пользователем
+      parameters:
+      - description: Post ID (UUID)
+        in: path
+        name: PostId
+        required: true
+        type: string
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_likes_transport.LikeStatusResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Проверить статус лайка
       tags:
       - Likes
   /posts/all:

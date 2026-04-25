@@ -13,8 +13,9 @@ type LikesHTTPHandler struct {
 }
 
 type LikesService interface {
-	AddLike(ctx context.Context, userID, postID string) error
-	RemoveLike(ctx context.Context, userID, postID string) error
+	AddLike(ctx context.Context, userID, postID string) (int64, error)
+	RemoveLike(ctx context.Context, userID, postID string) (int64, error)
+	IsLiked(ctx context.Context, userID, postID string) (bool, error)
 }
 
 func NewLikesHandler(likesService LikesService) *LikesHTTPHandler {
@@ -37,5 +38,10 @@ func (h *LikesHTTPHandler) Routes() []server.Route {
 			Handler:              h.RemoveLike,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
+		{
+			Method:               http.MethodGet,
+			URL:                  "/posts/{PostId}/like/status",
+			Handler:              h.GetLikeStatus,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()}},
 	}
 }

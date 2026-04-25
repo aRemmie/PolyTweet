@@ -10,9 +10,10 @@ import (
 )
 
 type RemoveLikeDTOResponse struct {
-	Message string `json:"message"`
-	UserID  string `json:"user_id"`
-	PostID  string `json:"post_id"`
+	Message    string `json:"message"`
+	UserID     string `json:"user_id"`
+	PostID     string `json:"post_id"`
+	LikesCount int64  `json:"likes_count"`
 }
 
 // RemoveLike godoc
@@ -40,7 +41,7 @@ func (h *LikesHTTPHandler) RemoveLike(w http.ResponseWriter, r *http.Request) {
 
 	postID := r.PathValue("PostId")
 
-	err := h.LikesService.RemoveLike(ctx, userID, postID)
+	likesCount, err := h.LikesService.RemoveLike(ctx, userID, postID)
 	if err != nil {
 		log.Error("failed to unlike post", zap.Error(err))
 		respWriter.MapError(err)
@@ -48,9 +49,10 @@ func (h *LikesHTTPHandler) RemoveLike(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := RemoveLikeDTOResponse{
-		Message: "post unliked successfully",
-		UserID:  userID,
-		PostID:  postID,
+		Message:    "post unliked successfully",
+		UserID:     userID,
+		PostID:     postID,
+		LikesCount: likesCount,
 	}
 
 	respWriter.JSONResponse(resp, http.StatusOK)

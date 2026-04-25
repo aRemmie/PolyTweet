@@ -10,9 +10,10 @@ import (
 )
 
 type LikePostDTOResponse struct {
-	Message string `json:"message"`
-	UserID  string `json:"user_id"`
-	PostID  string `json:"post_id"`
+	Message    string `json:"message"`
+	UserID     string `json:"user_id"`
+	PostID     string `json:"post_id"`
+	LikesCount int64  `json:"likes_count"`
 }
 
 // LikePost godoc
@@ -40,7 +41,7 @@ func (h *LikesHTTPHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 
 	postID := r.PathValue("PostId")
 
-	err := h.LikesService.AddLike(ctx, userID, postID)
+	likesCount, err := h.LikesService.AddLike(ctx, userID, postID)
 	if err != nil {
 		log.Error("failed to like post", zap.Error(err))
 		respWriter.MapError(err)
@@ -48,9 +49,10 @@ func (h *LikesHTTPHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := LikePostDTOResponse{
-		Message: "post liked successfully",
-		UserID:  userID,
-		PostID:  postID,
+		Message:    "post liked successfully",
+		UserID:     userID,
+		PostID:     postID,
+		LikesCount: likesCount,
 	}
 
 	respWriter.JSONResponse(resp, http.StatusOK)

@@ -483,6 +483,54 @@
                 }
             }
         },
+        "/posts/{PostId}/like/status": {
+            "get": {
+                "description": "Проверяет, лайкнут ли пост текущим пользователем",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Likes"
+                ],
+                "summary": "Проверить статус лайка",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID (UUID)",
+                        "name": "PostId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_likes_transport.LikeStatusResponseDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/profile/avatar": {
             "post": {
                 "description": "Загрузить аватарку в SeaweedFS и обновить профиль пользователя",
@@ -1039,6 +1087,9 @@
         "internal_features_likes_transport.LikePostDTOResponse": {
             "type": "object",
             "properties": {
+                "likes_count": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -1047,6 +1098,14 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "internal_features_likes_transport.LikeStatusResponseDTO": {
+            "type": "object",
+            "properties": {
+                "is_liked": {
+                    "type": "boolean"
                 }
             }
         },
