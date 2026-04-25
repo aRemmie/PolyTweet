@@ -1,76 +1,92 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '../../shared/Button/Button';
-import TextField from '../../shared/TextField/TextField';
-import { useAuthStore } from '../../../stores/useAuthStore';
 import styles from './CreatePostForm.module.scss';
 
 interface CreatePostFormProps {
-    onSubmit: (content: string) => Promise<void>;
-    isLoading?: boolean;
+    onSubmit: (content: string, image_url?: string) => Promise<void>;
+    isLoading: boolean;
+    placeholder?: string;
 }
 
-const CreatePostForm: FC<CreatePostFormProps> = ({ onSubmit, isLoading }) => {
+const CreatePostForm: React.FC<CreatePostFormProps> = ({
+    onSubmit,
+    isLoading,
+    placeholder = "What's happening?",
+}) => {
     const [content, setContent] = useState('');
-    const [error, setError] = useState('');
-    const email = useAuthStore((state) => state.email);
+    const [imageUrl, setImageUrl] = useState('');
+    const [showImageInput, setShowImageInput] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        if (!content.trim()) {
-            setError('Post content cannot be empty');
-            return;
-        }
+        if (!content.trim() || isLoading) return;
 
-        if (content.length > 280) {
-            setError('Post cannot exceed 280 characters');
-            return;
-        }
-
-        setError('');
-        try {
-            await onSubmit(content);
-            setContent('');
-        } catch (err) {
-            setError('Failed to create post');
-        }
+        await onSubmit(content.trim(), imageUrl || undefined);
+        setContent('');
+        setImageUrl('');
+        setShowImageInput(false);
     };
 
-    const characterCount = content.length;
-    const isOverLimit = characterCount > 280;
-
     return (
-        <form onSubmit={handleSubmit} className={styles.createPostForm}>
-            <div className={styles.avatarAndInput}>
-                <div className={styles.avatar}>
-                    {email?.[0]?.toUpperCase() || 'U'}
-                </div>
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        placeholder="What's happening?"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        textarea={true}
-                        rows={3}
-                        error={error}
-                        touched={!!error}
-                    />
-                    <div className={styles.charCounter}>
-                        <span className={`${styles.counter} ${isOverLimit ? styles.over : ''}`}>
-                            {characterCount}/280
-                        </span>
-                    </div>
-                </div>
+        <form className={styles.createPostForm} onSubmit={handleSubmit}>
+            <div className={styles.inputContainer}>
+                <textarea
+                    className={styles.postInput}
+                    placeholder={placeholder}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    maxLength={280}
+                    rows={3}
+                />
+                <div className={styles.charCount}>{content.length}/280</div>
             </div>
-            
+
+            {showImageInput && (
+                <div className={styles.imageInput}>
+                    <input
+                        type="text"
+                        placeholder="Enter image URL..."
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        className={styles.urlInput}
+                    />
+                </div>
+            )}
+
             <div className={styles.actions}>
-                <Button 
-                    type="submit" 
-                    isLoading={isLoading}
-                    disabled={!content.trim() || isOverLimit}
-                    variant="contained"
+                <div className={styles.toolbar}>
+                    <button
+                        type="button"
+                        className={styles.toolbarButton}
+                        onClick={() => setShowImageInput(!showImageInput)}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <rect
+                                x="2"
+                                y="2"
+                                width="20"
+                                height="20"
+                                rx="2"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            />
+                            <circle
+                                cx="8.5"
+                                cy="8.5"
+                                r="2.5"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            />
+                            <path d="M2 16L7 11L12 16L22 6" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                    </button>
+                </div>
+                <Button
+                    type="submit"
+                    //variant="primary"
+                    disabled={!content.trim() || isLoading}
                 >
-                    Post
+                    {isLoading ? 'Posting...' : 'Post'}
                 </Button>
             </div>
         </form>

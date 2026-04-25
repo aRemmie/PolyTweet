@@ -1,74 +1,74 @@
 :root,
-[data-theme="dark"] {
+[data-theme='dark'] {
     /* Backgrounds */
-    --bg-primary: #17202A;
-    --bg-secondary: #1C2733;
+    --bg-primary: #17202a;
+    --bg-secondary: #1c2733;
     --bg-tertiary: #232d39;
-    --bg-card: #1C2733;
+    --bg-card: #1c2733;
     --bg-search: #283340;
-    --bg-modal: #17202A;
+    --bg-modal: #17202a;
     --bg-hover: rgba(255, 255, 255, 0.03);
-    
+
     /* Text colors */
-    --text-primary: #FFFFFF;
-    --text-secondary: #8899A6;
+    --text-primary: #ffffff;
+    --text-secondary: #8899a6;
     --text-tertiary: #536471;
-    --text-disabled: #3A444C;
-    
+    --text-disabled: #3a444c;
+
     /* Borders */
-    --border-color: #3A444C;
+    --border-color: #3a444c;
     --border-light: #2f3336;
-    --border-focus: #1DA1F2;
-    
+    --border-focus: #1da1f2;
+
     /* Primary colors */
-    --primary-blue: #1DA1F2;
+    --primary-blue: #1da1f2;
     --primary-blue-hover: #1a8cd8;
     --primary-blue-active: #0c6b9e;
     --primary-blue-disabled: #1a5c8a;
-    
+
     /* Status colors */
-    --success: #00BA7C;
-    --error: #F4245E;
-    --warning: #FFAD1F;
-    --info: #1DA1F2;
-    
+    --success: #00ba7c;
+    --error: #f4245e;
+    --warning: #ffad1f;
+    --info: #1da1f2;
+
     /* Button specific */
-    --button-primary-bg: #1DA1F2;
-    --button-primary-text: #FFFFFF;
+    --button-primary-bg: #1da1f2;
+    --button-primary-text: #ffffff;
     --button-primary-hover: #1a8cd8;
     --button-secondary-bg: transparent;
-    --button-secondary-text: #1DA1F2;
-    --button-secondary-border: #1DA1F2;
+    --button-secondary-text: #1da1f2;
+    --button-secondary-border: #1da1f2;
     --button-secondary-hover: rgba(29, 161, 242, 0.1);
-    --button-disabled-bg: #3A444C;
-    --button-disabled-text: #8899A6;
-    
+    --button-disabled-bg: #3a444c;
+    --button-disabled-text: #8899a6;
+
     /* Input specific */
-    --input-bg: #17202A;
-    --input-text: #E7E9EA;
-    --input-placeholder: #71767B;
-    --input-border: #2F3336;
-    --input-border-focus: #1DA1F2;
-    --input-error: #F4245E;
-    
+    --input-bg: #17202a;
+    --input-text: #e7e9ea;
+    --input-placeholder: #71767b;
+    --input-border: #2f3336;
+    --input-border-focus: #1da1f2;
+    --input-error: #f4245e;
+
     /* Select specific */
-    --select-bg: #17202A;
-    --select-text: #E7E9EA;
-    --select-border: #2F3336;
-    --select-option-bg: #1C2733;
+    --select-bg: #17202a;
+    --select-text: #e7e9ea;
+    --select-border: #2f3336;
+    --select-option-bg: #1c2733;
     --select-option-hover: #283340;
-    --select-option-text: #FFFFFF;
-    
+    --select-option-text: #ffffff;
+
     /* Modal specific */
     --modal-bg: #212c3a;
     --modal-overlay: rgba(0, 0, 0, 0.8);
-    --modal-border: #2F3336;
-    
+    --modal-border: #2f3336;
+
     /* Auth specific */
-    --auth-title-color: #FFFFFF;
+    --auth-title-color: #ffffff;
     --auth-switch-text-color: #71767b;
     --auth-switch-border: #2f3336;
-    
+
     /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);

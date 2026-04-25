@@ -12,11 +12,11 @@ const Select: FC<SelectProps> = ({ label, options, error, touched, className, ..
     return (
         <div className={`${styles.container} ${className || ''}`}>
             {label && <label className={styles.label}>{label}</label>}
-            <select 
-                className={`${styles.select} ${touched && error ? styles.error : ''}`} 
+            <select
+                className={`${styles.select} ${touched && error ? styles.error : ''}`}
                 {...props}
             >
-                {options.map(option => (
+                {options.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}
                     </option>

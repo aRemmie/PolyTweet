@@ -8,12 +8,16 @@
 
 .leftSection {
     position: relative;
-    background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--primary-blue-active) 100%);
+    background: radial-gradient(
+        circle at center,
+        var(--primary-blue) 0%,
+        var(--primary-blue-active) 100%
+    );
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    
+
     &::before {
         content: '';
         position: absolute;
@@ -31,7 +35,7 @@
         pointer-events: none;
         z-index: 1;
     }
-    
+
     &::after {
         content: '';
         position: absolute;
@@ -39,11 +43,15 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        background: radial-gradient(
+            circle at 20% 30%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 50%
+        );
         pointer-events: none;
         z-index: 1;
     }
-    
+
     @media (max-width: 1024px) {
         display: none;
     }
@@ -63,8 +71,8 @@
     display: block;
     margin-bottom: 0;
     transition: transform 0.3s ease;
-    color: #FFFFFF;
-    
+    color: #ffffff;
+
     &:hover {
         transform: scale(1.05);
     }
@@ -75,7 +83,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+
     @media (max-width: 1024px) {
         grid-column: span 2;
         padding: 32px;
@@ -88,7 +96,7 @@
     color: var(--text-primary);
     margin-bottom: 48px;
     transition: color 0.3s ease;
-    
+
     @media (max-width: 768px) {
         font-size: 40px;
     }

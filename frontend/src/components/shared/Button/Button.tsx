@@ -7,16 +7,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean;
 }
 
-const Button: FC<ButtonProps> = ({ 
-    children, 
-    variant = 'contained', 
-    fullWidth = false, 
+const Button: FC<ButtonProps> = ({
+    children,
+    variant = 'contained',
+    fullWidth = false,
     isLoading = false,
     disabled,
-    ...props 
+    ...props
 }) => {
     return (
-        <button 
+        <button
             className={`${styles.button} ${styles[variant]} ${fullWidth ? styles.fullWidth : ''}`}
             disabled={disabled || isLoading}
             {...props}
