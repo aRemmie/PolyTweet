@@ -13,6 +13,7 @@
 import {
     GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError,
     GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError,
+    InternalFeaturesAuthTransportHttpProfileResponse,
     InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
@@ -53,6 +54,26 @@ export class Users<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
             path: `/users/${userId}/posts`,
             method: 'GET',
             query: query,
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Получить профиль пользователя с постами по id пользователя
+     *
+     * @tags Profile
+     * @name ProfileList
+     * @summary Получить профиль пользователя
+     * @request GET:/users/{UserId}/profile
+     */
+    profileList = (userId: string, params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesAuthTransportHttpProfileResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/users/${userId}/profile`,
+            method: 'GET',
             type: ContentType.Json,
             format: 'json',
             ...params,

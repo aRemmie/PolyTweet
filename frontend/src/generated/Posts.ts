@@ -14,6 +14,7 @@ import {
     GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError,
     GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError,
     InternalFeaturesLikesTransportLikePostDTOResponse,
+    InternalFeaturesLikesTransportLikeStatusResponseDTO,
     InternalFeaturesPostsTransportHttpCreatePostDTO,
     InternalFeaturesPostsTransportHttpCreatePostDTOResponse,
     InternalFeaturesPostsTransportHttpDeletePostDTOResponse,
@@ -162,6 +163,25 @@ export class Posts<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
             path: `/posts/${postId}/like`,
             method: 'DELETE',
             type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Проверяет, лайкнут ли пост текущим пользователем
+     *
+     * @tags Likes
+     * @name LikeStatusList
+     * @summary Проверить статус лайка
+     * @request GET:/posts/{PostId}/like/status
+     */
+    likeStatusList = (postId: string, params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesLikesTransportLikeStatusResponseDTO,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/posts/${postId}/like/status`,
+            method: 'GET',
             format: 'json',
             ...params,
         });

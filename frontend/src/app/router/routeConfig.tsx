@@ -9,6 +9,7 @@ export enum AppRoutes {
     FEED = 'feed',
     POST = 'post',
     PROFILE = 'profile',
+    OTHERS_PROFILE = 'others_profile',
 }
 
 export const RoutePath: Record<AppRoutes, string> = {
@@ -16,6 +17,7 @@ export const RoutePath: Record<AppRoutes, string> = {
     [AppRoutes.FEED]: '/feed',
     [AppRoutes.POST]: '/post/:id',
     [AppRoutes.PROFILE]: '/profile',
+    [AppRoutes.OTHERS_PROFILE]: '/profile/:id',
 };
 
 export const routeConfig: Record<AppRoutes, RouteProps> = {
@@ -33,6 +35,10 @@ export const routeConfig: Record<AppRoutes, RouteProps> = {
     },
     [AppRoutes.PROFILE]: {
         path: RoutePath.profile,
+        element: <ProfilePageAsync />,
+    },
+    [AppRoutes.OTHERS_PROFILE]: {
+        path: RoutePath.others_profile,
         element: <ProfilePageAsync />,
     },
 };

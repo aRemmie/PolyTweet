@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/useAuthStore';
 import { usePostStore } from '../../../stores/usePostStore';
 import CreatePostModal from '../CreatePostModal/CreatePostModal';
 import styles from './LeftPanel.module.scss';
+import { useProfileStore } from '../../../stores/useProfileStore';
 
 interface NavItem {
     id: string;
@@ -79,10 +80,22 @@ const BookmarksIcon = () => (
     </svg>
 );
 
-const ProfileIcon = () => (
+const ProfileIcon = ({ active }: { active?: boolean }) => (
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
-        <path d="M4 20C4 16 8 14 12 14C16 14 20 16 20 20" stroke="currentColor" strokeWidth="2" />
+        <circle
+            cx="12"
+            cy="8"
+            r="4"
+            strokeWidth="2"
+            fill={active ? '#1DA1F2' : 'none'}
+            stroke={active ? '#1DA1F2' : 'currentColor'}
+        />
+        <path
+            d="M4 20C4 16 8 14 12 14C16 14 20 16 20 20"
+            strokeWidth="2"
+            fill={active ? '#1DA1F2' : 'none'}
+            stroke={active ? '#1DA1F2' : 'currentColor'}
+        />
     </svg>
 );
 
@@ -112,15 +125,20 @@ const LeftPanel: React.FC = () => {
     const navigate = useNavigate();
     const logout = useAuthStore((state) => state.logout);
     const email = useAuthStore((state) => state.email);
+    const userId = useAuthStore((state) => state.userId);
     const { createPost } = usePostStore();
-    const [activeTab, setActiveTab] = useState('home');
+    //const [activeTab, setActiveTab] = useState('home');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+
+    const { addPostToState, profilesCache } = useProfileStore();
+
+    const location = useLocation();
 
     const navItems: NavItem[] = [
         {
             id: 'home',
-            icon: <HomeIcon active={activeTab === 'home'} />,
+            icon: <HomeIcon active={location.pathname === '/feed'} />,
             label: 'Home',
             path: '/feed',
         },
@@ -134,13 +152,18 @@ const LeftPanel: React.FC = () => {
         { id: 'messages', icon: <MessagesIcon />, label: 'Messages', disabled: true },
         { id: 'bookmarks', icon: <BookmarksIcon />, label: 'Bookmarks', disabled: true },
         { id: 'lists', icon: <ListsIcon />, label: 'Lists', disabled: true },
-        { id: 'profile', icon: <ProfileIcon />, label: 'Profile', path: '/profile' },
+        {
+            id: 'profile',
+            icon: <ProfileIcon active={location.pathname.startsWith('/profile')} />,
+            label: 'Profile',
+            path: '/profile',
+        },
         { id: 'more', icon: <MoreIcon />, label: 'More', disabled: true },
     ];
 
     const handleNavigation = (id: string, path?: string, disabled?: boolean) => {
         if (disabled) return;
-        setActiveTab(id);
+        //setActiveTab(id);
         if (path) navigate(path);
     };
 
@@ -159,7 +182,10 @@ const LeftPanel: React.FC = () => {
     const handleCreatePost = async (content: string, image_url?: string) => {
         setIsCreating(true);
         try {
-            await createPost(content, image_url);
+            const newPost = await createPost(content, image_url);
+            if (newPost) {
+                addPostToState(newPost);
+            }
             setIsCreateModalOpen(false);
         } catch (error) {
             console.error('Error creating post:', error);
@@ -180,17 +206,23 @@ const LeftPanel: React.FC = () => {
                 </button>
 
                 <nav className={styles.nav}>
-                    {navItems.map((item) => (
-                        <button
-                            key={item.id}
-                            className={`${styles.navItem} ${activeTab === item.id ? styles.active : ''} ${item.disabled ? styles.disabled : ''}`}
-                            onClick={() => handleNavigation(item.id, item.path, item.disabled)}
-                            disabled={item.disabled}
-                        >
-                            <span className={styles.icon}>{item.icon}</span>
-                            <span className={styles.label}>{item.label}</span>
-                        </button>
-                    ))}
+                    {navItems.map((item) => {
+                        const isActive =
+                            item.path === '/'
+                                ? location.pathname === '/'
+                                : location.pathname.startsWith(item.path || 'undefined');
+                        return (
+                            <button
+                                key={item.id}
+                                className={`${styles.navItem} ${isActive ? styles.active : ''} ${item.disabled ? styles.disabled : ''}`}
+                                onClick={() => handleNavigation(item.id, item.path, item.disabled)}
+                                disabled={item.disabled}
+                            >
+                                <span className={styles.icon}>{item.icon}</span>
+                                <span className={styles.label}>{item.label}</span>
+                            </button>
+                        );
+                    })}
                 </nav>
 
                 <button className={styles.tweetButton} onClick={() => setIsCreateModalOpen(true)}>
@@ -198,10 +230,22 @@ const LeftPanel: React.FC = () => {
                 </button>
 
                 <div className={styles.userInfo}>
-                    <div className={styles.avatar}>{email?.[0]?.toUpperCase() || 'U'}</div>
+                    <div className={styles.avatar}>
+                        {(profilesCache[userId] ? (
+                            <img
+                                className={styles.avatar}
+                                src={profilesCache[userId].avatar_url}
+                                alt={'avatar'}
+                            />
+                        ) : (
+                            ''
+                        )) ||
+                            email?.[0]?.toUpperCase() ||
+                            'U'}
+                    </div>
                     <div className={styles.userDetails}>
                         <div className={styles.name}>{email?.split('@')[0] || 'User'}</div>
-                        <div className={styles.username}>@{email?.split('@')[0] || 'user'}</div>
+                        <div className={styles.username}>@{userId?.slice(0, 8) || 'user'}</div>
                     </div>
                     <button onClick={handleLogout} className={styles.moreButton}>
                         <MoreIcon />

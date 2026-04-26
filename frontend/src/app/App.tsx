@@ -12,12 +12,12 @@ const App = () => {
 
     return (
         <div className="app">
-            <ToastContainer
+            {/*<ToastContainer
                 position="top-center"
                 hideProgressBar={true}
                 theme="dark"
                 autoClose={1000}
-            />
+            />*/}
             <AppRouter />
         </div>
     );

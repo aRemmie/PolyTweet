@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PostService } from '../services/PostService';
+import { PostService } from '@services/PostService';
 import type { GithubComTryingmyb3StPolyTweetInternalCoreDomainPost } from '../generated/data-contracts';
 
 interface PostState {

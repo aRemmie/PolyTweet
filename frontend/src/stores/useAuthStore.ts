@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AuthService } from '../services/AuthService';
+import { parseJwt } from '../utils/string.utils';
 
 interface AuthState {
     isAuth: boolean;
@@ -31,8 +32,15 @@ export const useAuthStore = create<AuthState>()(
                     const response = await AuthService.login({ email, password });
                     if (response.token) {
                         localStorage.setItem('token', response.token);
+                        const decoded = parseJwt(response.token);
+                        const userIdFromToken = decoded?.UserId || null;
+                        set({
+                            email: email,
+                            isAuth: true,
+                            isLoading: false,
+                            userId: userIdFromToken,
+                        });
                     }
-                    set({ email: email, isAuth: true, isLoading: false });
                 } catch (e) {
                     console.log(e);
                     set({ isLoading: false });
