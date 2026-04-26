@@ -70,6 +70,33 @@ export interface InternalFeaturesAuthTransportHttpLoginDTOResponse {
     token?: string;
 }
 
+export interface InternalFeaturesAuthTransportHttpPostResponse {
+    /** @example "24b6b463-266f-4916-b199-f833e6e334ce" */
+    id?: string;
+    /** @example "..." */
+    content?: string;
+    /** @example "bba83b30-a3ba-4fa8-a6de-79c27b3f5946" */
+    user_id?: string;
+    /** @example "timestamp" */
+    created_at?: string;
+}
+
+export interface InternalFeaturesAuthTransportHttpProfileResponse {
+    /** @example "http://localhost:8333/6,0307364665" */
+    id?: string;
+    /** @example "lol@gmail.com" */
+    email?: string;
+    /** @example "admin" */
+    role?: string;
+    /** @example "http://localhost:8333/6,0307364665" */
+    avatar_url?: string;
+    /** @example "lol" */
+    bio?: string;
+    /** @example "timestamp" */
+    created_at?: string;
+    posts?: InternalFeaturesAuthTransportHttpPostResponse[];
+}
+
 export interface InternalFeaturesAuthTransportHttpRegisterDTO {
     /** @example "useremail@gmail.com" */
     email?: string;
@@ -91,10 +118,31 @@ export interface InternalFeaturesAuthTransportHttpRegisterDTOResponse {
     createdAt?: string;
 }
 
+export interface InternalFeaturesAuthTransportHttpUpdateProfileRequest {
+    /** @example "http://localhost:8333/6,0307364665" */
+    avatar_url?: string;
+    /** @example "lol" */
+    bio?: string;
+}
+
+export interface InternalFeaturesAuthTransportHttpUpdateProfileResp {
+    message?: string;
+}
+
+export interface InternalFeaturesAuthTransportHttpUploadAvatarResponse {
+    /** @example "http://localhost:8333/6,0307364665" */
+    avatar_url?: string;
+}
+
 export interface InternalFeaturesLikesTransportLikePostDTOResponse {
+    likes_count?: number;
     message?: string;
     post_id?: string;
     user_id?: string;
+}
+
+export interface InternalFeaturesLikesTransportLikeStatusResponseDTO {
+    is_liked?: boolean;
 }
 
 export interface InternalFeaturesPostsTransportHttpCreatePostDTO {

@@ -8,12 +8,14 @@ import RightPanel from '../../components/feed/RightPanel/RightPanel';
 import CreatePostForm from '../../components/feed/CreatePostForm/CreatePostForm';
 import { toast } from 'react-toastify';
 import styles from './FeedPage.module.scss';
+import { useProfileStore } from '../../stores/useProfileStore';
 
 const FeedPage: React.FC = () => {
     const navigate = useNavigate();
     const isAuth = useAuthStore((state) => state.isAuth);
     const userId = useAuthStore((state) => state.userId);
     const { posts, isLoading, fetchFeed, createPost, deletePost } = usePostStore();
+    const { addPostToState } = useProfileStore();
     const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
@@ -27,7 +29,10 @@ const FeedPage: React.FC = () => {
     const handleCreatePost = async (content: string, image_url?: string) => {
         setIsCreating(true);
         try {
-            await createPost(content, image_url);
+            const newPost = await createPost(content, image_url);
+            if (newPost) {
+                addPostToState(newPost);
+            }
             toast.success('Post created!');
         } catch (error) {
             toast.error('Failed to create post');
