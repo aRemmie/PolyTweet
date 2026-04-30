@@ -21,25 +21,25 @@
     transition: all 0.3s ease;
     width: 100%;
     font-family: inherit;
-    
+
     &:focus {
         outline: none;
         border-color: var(--input-border-focus);
         box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.1);
     }
-    
+
     &::placeholder {
         color: var(--input-placeholder);
     }
-    
+
     &.error {
         border-color: var(--input-error);
-        
+
         &:focus {
             box-shadow: 0 0 0 2px rgba(244, 36, 94, 0.1);
         }
     }
-    
+
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;

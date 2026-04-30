@@ -6,3 +6,11 @@ export const truncateText = (text: string, maxLength: number = 280): string => {
 export const getInitials = (email: string): string => {
     return email?.[0]?.toUpperCase() || 'U';
 };
+
+export const parseJwt = (token: string) => {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+};

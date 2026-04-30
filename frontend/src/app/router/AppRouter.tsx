@@ -7,7 +7,7 @@ const AppRouter = () => {
     const isAuth = useAuthStore((state) => state.isAuth);
 
     return (
-        <Suspense fallback={<div>Loading</div>}>
+        <Suspense fallback={<div></div>}>
             {/*todo: splash screen/loader*/}
             <BrowserRouter>
                 <Routes>

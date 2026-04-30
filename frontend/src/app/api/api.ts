@@ -22,7 +22,7 @@ $api.interceptors.request.use(
     },
     (error) => {
         return Promise.reject(error);
-    }
+    },
 );
 
 $api.interceptors.response.use(
@@ -32,7 +32,7 @@ $api.interceptors.response.use(
     (error) => {
         if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
             toast.error('Cannot connect to backend server.', {
-                position: "top-right",
+                position: 'top-right',
                 autoClose: 8000,
             });
         }
@@ -44,7 +44,7 @@ $api.interceptors.response.use(
             }, 1500);
         }
         return Promise.reject(error);
-    }
+    },
 );
 
 export default $api;

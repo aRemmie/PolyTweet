@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
-import AppRouter from "./router/AppRouter";
+import AppRouter from './router/AppRouter';
 import './styles/global.scss';
 
 const App = () => {
@@ -12,12 +12,12 @@ const App = () => {
 
     return (
         <div className="app">
-            <ToastContainer
+            {/*<ToastContainer
                 position="top-center"
                 hideProgressBar={true}
                 theme="dark"
                 autoClose={1000}
-            />
+            />*/}
             <AppRouter />
         </div>
     );

@@ -28,11 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, handleClose, initialMode = 
                     <p className={styles.switchText}>
                         {isSignup ? 'Already have an account?' : "Don't have an account?"}
                     </p>
-                    <Button
-                        variant="outlined"
-                        fullWidth
-                        onClick={() => setIsSignup(!isSignup)}
-                    >
+                    <Button variant="outlined" fullWidth onClick={() => setIsSignup(!isSignup)}>
                         {isSignup ? 'Sign in' : 'Sign up'}
                     </Button>
                 </div>

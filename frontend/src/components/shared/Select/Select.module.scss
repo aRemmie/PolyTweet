@@ -22,26 +22,26 @@
     width: 100%;
     font-family: inherit;
     cursor: pointer;
-    
+
     &:focus {
         outline: none;
         border-color: var(--border-focus);
         box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.1);
     }
-    
+
     &.error {
         border-color: var(--error);
-        
+
         &:focus {
             box-shadow: 0 0 0 2px rgba(244, 36, 94, 0.1);
         }
     }
-    
+
     option {
         background: var(--select-option-bg);
         color: var(--select-option-text);
         padding: 10px;
-        
+
         &:hover {
             background: var(--select-option-hover);
         }

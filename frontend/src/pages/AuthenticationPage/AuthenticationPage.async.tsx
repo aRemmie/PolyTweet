@@ -1,4 +1,4 @@
-import {lazy} from "react";
+import { lazy } from 'react';
 
 const AuthenticationPageAsync = lazy(() => import('./AuthenticationPage'));
 

@@ -12,16 +12,14 @@ interface PostCardProps {
 }
 
 const PostCard: FC<PostCardProps> = ({ post, onDelete }) => {
-    const userId = useAuthStore(state => state.userId);
+    const userId = useAuthStore((state) => state.userId);
     const isAuthor = userId === post.user_id;
 
     return (
         <div className={styles.postCard}>
             <div className={styles.postHeader}>
                 <div className={styles.authorInfo}>
-                    <div className={styles.avatar}>
-                        {getInitials(post.user_id || '')}
-                    </div>
+                    <div className={styles.avatar}>{getInitials(post.user_id || '')}</div>
                     <div className={styles.authorDetails}>
                         <span className={styles.authorEmail}>
                             {`User ${post.user_id?.slice(0, 8) || 'Unknown'}`}
@@ -32,8 +30,8 @@ const PostCard: FC<PostCardProps> = ({ post, onDelete }) => {
                     </div>
                 </div>
                 {isAuthor && onDelete && (
-                    <Button 
-                        variant="outlined" 
+                    <Button
+                        variant="outlined"
                         onClick={() => onDelete(post.id)}
                         className={styles.deleteButton}
                     >

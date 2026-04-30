@@ -16,7 +16,9 @@ interface SignupFormValues {
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email is Required ;('),
-    password: Yup.string().min(6, 'Password must be at least 6 characters????').required('Password is Required :((('),
+    password: Yup.string()
+        .min(6, 'Password must be at least 6 characters????')
+        .required('Password is Required :((('),
     role: Yup.string().required('Role is Required :3'),
 });
 
@@ -44,7 +46,8 @@ const SignupForm = () => {
                 navigate('/feed');
                 formik.resetForm();
             } catch (error: any) {
-                const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+                const errorMessage =
+                    error.response?.data?.message || 'Registration failed. Please try again.';
                 toast.error(errorMessage);
             }
         },
@@ -53,7 +56,7 @@ const SignupForm = () => {
     return (
         <form onSubmit={formik.handleSubmit} className={styles.form}>
             <h1 className={styles.title}>Create your account</h1>
-            
+
             <TextField
                 name="email"
                 type="email"
@@ -64,7 +67,7 @@ const SignupForm = () => {
                 error={formik.errors.email}
                 touched={formik.touched.email}
             />
-            
+
             <TextField
                 name="password"
                 type="password"
@@ -75,7 +78,7 @@ const SignupForm = () => {
                 error={formik.errors.password}
                 touched={formik.touched.password}
             />
-            
+
             <Select
                 name="role"
                 options={roleOptions}
@@ -85,7 +88,7 @@ const SignupForm = () => {
                 error={formik.errors.role}
                 touched={formik.touched.role}
             />
-            
+
             <Button type="submit" fullWidth isLoading={isLoading}>
                 Sign up
             </Button>
