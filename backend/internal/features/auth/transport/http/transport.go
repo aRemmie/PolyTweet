@@ -16,7 +16,7 @@ type AuthHTTPHandler struct {
 type AuthService interface {
 	GetTestJWTByRole(user domain.User) (*string, error)
 	RegisterUser(ctx context.Context, user domain.User, password string) (*domain.User, error)
-	LoginUser(ctx context.Context, email, password string) (*string, error)
+	LoginUser(ctx context.Context, email, password string) (*string, *domain.User, error)
 	GetUserProfile(ctx context.Context, userID string) (*domain.User, error)
 	GetUserProfileWithPosts(ctx context.Context, userID string) (*domain.User, []domain.Post, error)
 	UpdateUserProfile(ctx context.Context, userID, avatarURL, bio string) error
@@ -62,6 +62,12 @@ func (h *AuthHTTPHandler) Routes() []server.Route {
 			Method:               "POST",
 			URL:                  "/profile/avatar",
 			Handler:              h.UploadAvatar,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               "GET",
+			URL:                  "/users/me/profile",
+			Handler:              h.GetUserProfileByJWT,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
 	}

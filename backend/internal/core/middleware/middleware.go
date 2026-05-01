@@ -85,7 +85,7 @@ func AuthMiddleware() Middleware {
 			if token == "" || !strings.HasPrefix(token, "Bearer") {
 				log.Debug("unauthorized user", zap.String("Authorization", r.Header.Get("Authorization")))
 
-				respWriter.ErrorResponse(domain.INVALID_REQUEST, http.StatusUnauthorized)
+				respWriter.ErrorResponse(domain.UNAUTHORIZED, http.StatusUnauthorized)
 				return
 			}
 
@@ -95,7 +95,7 @@ func AuthMiddleware() Middleware {
 			if err != nil {
 				log.Debug("invalid token", zap.Any("claims", claims))
 
-				respWriter.ErrorResponse(domain.INVALID_REQUEST, http.StatusBadRequest)
+				respWriter.ErrorResponse(domain.UNAUTHORIZED, http.StatusBadRequest)
 				return
 			}
 			log.Debug("user claims", zap.String("id", claims.UserId), zap.String("role", claims.Role))
@@ -103,7 +103,7 @@ func AuthMiddleware() Middleware {
 			if claims.ExpiresAt.Before(time.Now()) {
 				log.Debug("token expired", zap.Time("expiresAt", claims.ExpiresAt.Time))
 
-				respWriter.ErrorResponse(domain.INVALID_REQUEST, http.StatusBadRequest)
+				respWriter.ErrorResponse(domain.UNAUTHORIZED, http.StatusBadRequest)
 				return
 			}
 

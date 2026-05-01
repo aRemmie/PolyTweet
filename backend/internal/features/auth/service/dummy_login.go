@@ -5,8 +5,6 @@ import (
 
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
 	"github.com/tryingmyb3st/PolyTweet/internal/utils/jwt_utils"
-
-	"github.com/go-playground/validator/v10"
 )
 
 const (
@@ -37,10 +35,8 @@ func (s *AuthService) GetTestJWTByRole(user domain.User) (*string, error) {
 }
 
 func (s *AuthService) ValidateDummy(user domain.User) error {
-	userValidator := validator.New()
-
-	if err := userValidator.StructPartial(user, "Role"); err != nil {
-		return err
+	if user.Role != "admin" && user.Role != "user" {
+		return fmt.Errorf("invalid role: %s", user.Role)
 	}
 
 	return nil

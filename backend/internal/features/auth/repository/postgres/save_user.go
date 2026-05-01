@@ -13,15 +13,16 @@ func (r *AuthRepository) SaveNewUser(ctx context.Context, user domain.User) (*do
 	defer cancel()
 
 	query := `
-	INSERT INTO users(id, email, password, role, created_at)
-	VALUES($1,$2,$3,$4,$5)
-	RETURNING id, email, password, role, created_at
+	INSERT INTO users(id, username, email, password, role, created_at)
+	VALUES($1,$2,$3,$4,$5,$6)
+	RETURNING id, username, email, password, role, created_at
 	`
 
 	row := r.ConnPool.QueryRow(
 		ctxTimeout,
 		query,
 		user.ID,
+		user.Username,
 		user.Email,
 		user.Password,
 		user.Role,
@@ -31,6 +32,7 @@ func (r *AuthRepository) SaveNewUser(ctx context.Context, user domain.User) (*do
 	var model auth_models.UserModel
 	err := row.Scan(
 		&model.ID,
+		&model.Username,
 		&model.Email,
 		&model.Password,
 		&model.Role,
@@ -43,6 +45,7 @@ func (r *AuthRepository) SaveNewUser(ctx context.Context, user domain.User) (*do
 
 	return &domain.User{
 		ID:        model.ID,
+		Username:  model.Username,
 		Email:     model.Email,
 		Password:  model.Password,
 		Role:      model.Role,

@@ -14,16 +14,18 @@ import (
 
 type RegisterDTO struct {
 	Email    string `json:"email" example:"useremail@gmail.com" extensions:"x-order=0"`
-	Password string `json:"password" example:"supersecretpass" extensions:"x-order=1"`
-	Role     string `json:"role" example:"admin" extensions:"x-order=2"`
+	Username string `json:"username" example:"m4rkek" extensions:"x-order=1"`
+	Password string `json:"password" example:"supersecretpass" extensions:"x-order=2"`
+	Role     string `json:"role" example:"admin" extensions:"x-order=3"`
 }
 
 type RegisterDTOResponse struct {
 	ID        string    `json:"id"  example:"3fa85f64-5717-4562-b3fc-2c963f66afa6" extensions:"x-order=0"`
-	Email     string    `json:"email" example:"useremail@gmail.com" extensions:"x-order=1"`
-	Password  string    `json:"password,omitempty" extensions:"x-order=2"`
-	Role      string    `json:"role" example:"admin" extensions:"x-order=3"`
-	CreatedAt time.Time `json:"createdAt" example:"2026-03-25T12:00:41.267Z" extensions:"x-order=4"`
+	Username  string    `json:"username" example:"m4rkek" extensions:"x-order=1"`
+	Email     string    `json:"email" example:"useremail@gmail.com" extensions:"x-order=2"`
+	Password  string    `json:"password,omitempty" extensions:"x-order=3"`
+	Role      string    `json:"role" example:"admin" extensions:"x-order=4"`
+	CreatedAt time.Time `json:"createdAt" example:"2026-03-25T12:00:41.267Z" extensions:"x-order=5"`
 }
 
 // RegisterUser godoc
@@ -54,8 +56,9 @@ func (h *AuthHTTPHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	user, err := h.AuthService.RegisterUser(
 		ctx,
 		domain.User{
-			Email: req.Email,
-			Role:  req.Role,
+			Email:    req.Email,
+			Username: req.Username,
+			Role:     req.Role,
 		},
 		req.Password,
 	)
@@ -69,6 +72,7 @@ func (h *AuthHTTPHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	resp := RegisterDTOResponse{
 		ID:        user.ID,
+		Username:  user.Username,
 		Email:     user.Email,
 		Role:      user.Role,
 		CreatedAt: user.CreatedAt,

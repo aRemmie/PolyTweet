@@ -11,19 +11,22 @@ import (
 
 type PostResponse struct {
 	ID        string `json:"id" example:"24b6b463-266f-4916-b199-f833e6e334ce" extensions:"x-order=0"`
-	Content   string `json:"content" example:"..." extensions:"x-order=1"`
-	UserID    string `json:"user_id" example:"bba83b30-a3ba-4fa8-a6de-79c27b3f5946" extensions:"x-order=2"`
-	CreatedAt string `json:"created_at" example:"timestamp" extensions:"x-order=3"`
+	Username  string `json:"username" example:"m4rkek" extensions:"x-order=1"`
+	Content   string `json:"content" example:"..." extensions:"x-order=2"`
+	UserID    string `json:"user_id" example:"bba83b30-a3ba-4fa8-a6de-79c27b3f5946" extensions:"x-order=3"`
+	CreatedAt string `json:"created_at" example:"timestamp" extensions:"x-order=4"`
+	AvatarURL string `json:"avatar_url" example:"http://localhost:8333/6,0307364665" extensions:"x-order=5"`
 }
 
 type ProfileResponse struct {
 	ID        string         `json:"id" example:"http://localhost:8333/6,0307364665" extensions:"x-order=0"`
-	Email     string         `json:"email" example:"lol@gmail.com" extensions:"x-order=1"`
-	Role      string         `json:"role" example:"admin" extensions:"x-order=2"`
-	AvatarURL string         `json:"avatar_url" example:"http://localhost:8333/6,0307364665" extensions:"x-order=3"`
-	Bio       string         `json:"bio" example:"lol" extensions:"x-order=4"`
-	CreatedAt string         `json:"created_at" example:"timestamp" extensions:"x-order=5"`
-	Posts     []PostResponse `json:"posts" extensions:"x-order=6"`
+	Username  string         `json:"username" example:"m4rkek" extensions:"x-order=1"`
+	Email     string         `json:"email" example:"lol@gmail.com" extensions:"x-order=2"`
+	Role      string         `json:"role" example:"admin" extensions:"x-order=3"`
+	AvatarURL string         `json:"avatar_url" example:"http://localhost:8333/6,0307364665" extensions:"x-order=4"`
+	Bio       string         `json:"bio" example:"lol" extensions:"x-order=5"`
+	CreatedAt string         `json:"created_at" example:"timestamp" extensions:"x-order=6"`
+	Posts     []PostResponse `json:"posts" extensions:"x-order=7"`
 }
 
 // GetUserProfile godoc
@@ -60,14 +63,17 @@ func (h *AuthHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request)
 	for _, post := range posts {
 		postResponses = append(postResponses, PostResponse{
 			ID:        post.ID,
+			Username:  user.Username,
 			Content:   post.Content,
 			UserID:    post.UserID,
 			CreatedAt: post.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+			AvatarURL: user.AvatarURL,
 		})
 	}
 
 	profileResp := ProfileResponse{
 		ID:        user.ID,
+		Username:  user.Username,
 		Email:     user.Email,
 		Role:      user.Role,
 		AvatarURL: user.AvatarURL,

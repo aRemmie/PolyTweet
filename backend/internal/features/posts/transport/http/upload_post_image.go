@@ -1,4 +1,4 @@
-package auth_transport
+package http
 
 import (
 	"net/http"
@@ -9,29 +9,28 @@ import (
 	"go.uber.org/zap"
 )
 
-type UploadAvatarResponse struct {
-	AvatarURL string `json:"avatar_url" example:"http://localhost:8333/6,0307364665"`
+type UploadImageDTOResponse struct {
+	ImageURL string `json:"image_url" example:"https://example.com/image.jpg"`
 }
 
-// UploadAvatar godoc
-// @Summary Загрузить аватарку пользователя
-// @Description Загрузить аватарку в SeaweedFS и обновить профиль пользователя
-// @Tags Profile
+// UploadPostImage godoc
+// @Summary Загрузить изображение для поста
+// @Description Загрузить изображение в SeaweedFS и возвращает URL
+// @Tags Posts
 // @Accept multipart/form-data
 // @Produce json
-// @Param file formData file true "Файл аватарки"
+// @Param file formData file true "Файл изображения"
 // @Param Authorization header string true "Bearer <jwt токен>"
-// @Success 200 {object} UploadAvatarResponse
+// @Success 200 {object} UploadImageDTOResponse
 // @Failure 400 {object} domain.CustomError "Неверный запрос"
 // @Failure 500 {object}  domain.InternalError "Внутренняя ошибка сервера"
-// @Router /profile/avatar [post]
-func (h *AuthHTTPHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
+// @Router /posts/image [post]
+func (h *PostsHTTPHandler) UploadPostImage(w http.ResponseWriter, r *http.Request) {
 	log := r.Context().Value("log").(*logger.Logger)
 	respWriter := response.NewResponseHandler(log, w)
 
-	userID := r.Context().Value("userId").(string)
-
-	if err := r.ParseMultipartForm(5 << 20); err != nil {
+	const maxFileSize = 5 << 20
+	if err := r.ParseMultipartForm(maxFileSize); err != nil {
 		log.Debug("failed to parse multipart form", zap.Error(err))
 		respWriter.ErrorResponse(domain.INVALID_REQUEST, http.StatusBadRequest)
 		return
@@ -44,23 +43,28 @@ func (h *AuthHTTPHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-
 	contentType := header.Header.Get("Content-Type")
-	if contentType != "image/jpeg" && contentType != "image/png" && contentType != "image/jpg" && contentType != "image/webp" {
+	allowedTypes := map[string]bool{
+		"image/jpeg": true,
+		"image/jpg":  true,
+		"image/png":  true,
+	}
+
+	if !allowedTypes[contentType] {
 		log.Debug("invalid file type", zap.String("contentType", contentType))
 		respWriter.ErrorResponse(domain.INVALID_REQUEST, http.StatusBadRequest)
 		return
 	}
 
-	avatarURL, err := h.AuthService.UploadAvatar(r.Context(), userID, file, header.Filename)
+	imageURL, err := h.PostsService.UploadImage(r.Context(), file, header.Filename)
 	if err != nil {
 		log.Error("failed to upload avatar", zap.Error(err))
 		respWriter.MapError(err)
 		return
 	}
 
-	resp := UploadAvatarResponse{
-		AvatarURL: avatarURL,
+	resp := UploadImageDTOResponse{
+		ImageURL: imageURL,
 	}
 
 	respWriter.JSONResponse(resp, http.StatusOK)

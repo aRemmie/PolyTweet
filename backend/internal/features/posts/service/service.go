@@ -2,13 +2,15 @@ package service
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
 )
 
 type PostsService struct {
-	postsRepo PostsRepository
-	cacheRepo Cache
+	postsRepo     PostsRepository
+	cacheRepo     Cache
+	storageClient StorageClient
 }
 
 type PostsRepository interface {
@@ -26,9 +28,14 @@ type Cache interface {
 	GetPostByID(ctx context.Context, postID string) (*domain.Post, error)
 }
 
-func NewPostsService(postsRepo PostsRepository, cache Cache) *PostsService {
+type StorageClient interface {
+	UploadFile(file multipart.File, filename string) (string, error)
+}
+
+func NewPostsService(postsRepo PostsRepository, cache Cache, storageClient StorageClient) *PostsService {
 	return &PostsService{
-		postsRepo: postsRepo,
-		cacheRepo: cache,
+		postsRepo:     postsRepo,
+		cacheRepo:     cache,
+		storageClient: storageClient,
 	}
 }

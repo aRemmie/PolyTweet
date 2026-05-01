@@ -233,6 +233,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/image": {
+            "post": {
+                "description": "Загрузить изображение в SeaweedFS и возвращает URL",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Загрузить изображение для поста",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Файл изображения",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_posts_transport_http.UploadImageDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/posts/{PostId}": {
             "get": {
                 "description": "Ищет пост по ID",
@@ -551,7 +602,7 @@ const docTemplate = `{
                 "tags": [
                     "Profile"
                 ],
-                "summary": "Загрузить аватарку пользотвалея",
+                "summary": "Загрузить аватарку пользователя",
                 "parameters": [
                     {
                         "type": "file",
@@ -676,6 +727,50 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Неверный запрос или email уже занят",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/profile": {
+            "get": {
+                "description": "Получить профиль пользователя с постами по JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Получить профиль пользователя по JWT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.ProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
                         "schema": {
                             "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
                         }
@@ -878,6 +973,9 @@ const docTemplate = `{
                 "user_id"
             ],
             "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
                 "content": {
                     "type": "string",
                     "maxLength": 280,
@@ -903,6 +1001,11 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "minLength": 4
                 }
             }
         },
@@ -941,6 +1044,12 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -952,20 +1061,30 @@ const docTemplate = `{
                     "x-order": "0",
                     "example": "24b6b463-266f-4916-b199-f833e6e334ce"
                 },
-                "content": {
+                "username": {
                     "type": "string",
                     "x-order": "1",
+                    "example": "m4rkek"
+                },
+                "content": {
+                    "type": "string",
+                    "x-order": "2",
                     "example": "..."
                 },
                 "user_id": {
                     "type": "string",
-                    "x-order": "2",
+                    "x-order": "3",
                     "example": "bba83b30-a3ba-4fa8-a6de-79c27b3f5946"
                 },
                 "created_at": {
                     "type": "string",
-                    "x-order": "3",
+                    "x-order": "4",
                     "example": "timestamp"
+                },
+                "avatar_url": {
+                    "type": "string",
+                    "x-order": "5",
+                    "example": "http://localhost:8333/6,0307364665"
                 }
             }
         },
@@ -977,29 +1096,34 @@ const docTemplate = `{
                     "x-order": "0",
                     "example": "http://localhost:8333/6,0307364665"
                 },
-                "email": {
+                "username": {
                     "type": "string",
                     "x-order": "1",
+                    "example": "m4rkek"
+                },
+                "email": {
+                    "type": "string",
+                    "x-order": "2",
                     "example": "lol@gmail.com"
                 },
                 "role": {
                     "type": "string",
-                    "x-order": "2",
+                    "x-order": "3",
                     "example": "admin"
                 },
                 "avatar_url": {
                     "type": "string",
-                    "x-order": "3",
+                    "x-order": "4",
                     "example": "http://localhost:8333/6,0307364665"
                 },
                 "bio": {
                     "type": "string",
-                    "x-order": "4",
+                    "x-order": "5",
                     "example": "lol"
                 },
                 "created_at": {
                     "type": "string",
-                    "x-order": "5",
+                    "x-order": "6",
                     "example": "timestamp"
                 },
                 "posts": {
@@ -1007,7 +1131,7 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/internal_features_auth_transport_http.PostResponse"
                     },
-                    "x-order": "6"
+                    "x-order": "7"
                 }
             }
         },
@@ -1019,14 +1143,19 @@ const docTemplate = `{
                     "x-order": "0",
                     "example": "useremail@gmail.com"
                 },
-                "password": {
+                "username": {
                     "type": "string",
                     "x-order": "1",
+                    "example": "m4rkek"
+                },
+                "password": {
+                    "type": "string",
+                    "x-order": "2",
                     "example": "supersecretpass"
                 },
                 "role": {
                     "type": "string",
-                    "x-order": "2",
+                    "x-order": "3",
                     "example": "admin"
                 }
             }
@@ -1039,23 +1168,28 @@ const docTemplate = `{
                     "x-order": "0",
                     "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
                 },
-                "email": {
+                "username": {
                     "type": "string",
                     "x-order": "1",
+                    "example": "m4rkek"
+                },
+                "email": {
+                    "type": "string",
+                    "x-order": "2",
                     "example": "useremail@gmail.com"
                 },
                 "password": {
                     "type": "string",
-                    "x-order": "2"
+                    "x-order": "3"
                 },
                 "role": {
                     "type": "string",
-                    "x-order": "3",
+                    "x-order": "4",
                     "example": "admin"
                 },
                 "createdAt": {
                     "type": "string",
-                    "x-order": "4",
+                    "x-order": "5",
                     "example": "2026-03-25T12:00:41.267Z"
                 }
             }
@@ -1063,15 +1197,15 @@ const docTemplate = `{
         "internal_features_auth_transport_http.UpdateProfileRequest": {
             "type": "object",
             "properties": {
-                "avatar_url": {
-                    "type": "string",
-                    "x-order": "0",
-                    "example": "http://localhost:8333/6,0307364665"
-                },
                 "bio": {
                     "type": "string",
                     "x-order": "0",
                     "example": "lol"
+                },
+                "avatar_url": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "http://localhost:8333/6,0307364665"
                 }
             }
         },
@@ -1225,35 +1359,54 @@ const docTemplate = `{
                     "x-order": "1",
                     "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
                 },
-                "content": {
+                "username": {
                     "type": "string",
                     "x-order": "2",
+                    "example": "m4rkek"
+                },
+                "content": {
+                    "type": "string",
+                    "x-order": "3",
                     "example": "Hello, world!"
                 },
                 "likes_count": {
                     "type": "integer",
-                    "x-order": "3",
+                    "x-order": "4",
                     "example": 0
                 },
                 "parent_id": {
                     "type": "string",
-                    "x-order": "4",
+                    "x-order": "5",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "reply_to": {
                     "type": "string",
-                    "x-order": "5",
+                    "x-order": "6",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "image_url": {
                     "type": "string",
-                    "x-order": "6",
+                    "x-order": "7",
+                    "example": "https://example.com/image.jpg"
+                },
+                "avatar_url": {
+                    "type": "string",
+                    "x-order": "8",
                     "example": "https://example.com/image.jpg"
                 },
                 "created_at": {
                     "type": "string",
-                    "x-order": "7",
+                    "x-order": "9",
                     "example": "2026-03-25T12:00:41.267Z"
+                }
+            }
+        },
+        "internal_features_posts_transport_http.UploadImageDTOResponse": {
+            "type": "object",
+            "properties": {
+                "image_url": {
+                    "type": "string",
+                    "example": "https://example.com/image.jpg"
                 }
             }
         }

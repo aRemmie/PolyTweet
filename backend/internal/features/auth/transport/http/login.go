@@ -17,7 +17,9 @@ type LoginDTO struct {
 }
 
 type LoginDTOResponse struct {
-	Token string `json:"token"`
+	Token    string `json:"token"`
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
 }
 
 // LoginUser godoc
@@ -45,7 +47,7 @@ func (h *AuthHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwt, err := h.AuthService.LoginUser(ctx, req.Email, req.Password)
+	jwt, user, err := h.AuthService.LoginUser(ctx, req.Email, req.Password)
 
 	if err != nil {
 		log.Error("get user", zap.Error(err))
@@ -55,7 +57,9 @@ func (h *AuthHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := LoginDTOResponse{
-		Token: *jwt,
+		Token:    *jwt,
+		Username: user.Username,
+		UserID:   user.ID,
 	}
 
 	respWriter.JSONResponse(resp, http.StatusOK)

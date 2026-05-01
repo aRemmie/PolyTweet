@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
@@ -26,6 +27,7 @@ type PostsService interface {
 		ctx context.Context,
 		paginationParams *domain.PaginationParams,
 	) ([]domain.Post, *domain.Pagination, error)
+	UploadImage(ctx context.Context, file multipart.File, filename string) (string, error)
 }
 
 func NewPostsHandler(postsService PostsService) *PostsHTTPHandler {
@@ -64,6 +66,12 @@ func (h *PostsHTTPHandler) Routes() []server.Route {
 			Method:               http.MethodGet,
 			URL:                  "/posts/all",
 			Handler:              h.GetLastWeekPosts,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               http.MethodPost,
+			URL:                  "/posts/image",
+			Handler:              h.UploadPostImage,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
 	}

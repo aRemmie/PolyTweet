@@ -18,10 +18,13 @@ func (r *PostsRepository) GetPostsByUser(
 	defer cancel()
 
 	query := `
-	SELECT id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at
-	FROM posts
-	WHERE user_id = $1
-	ORDER BY created_at DESC
+	SELECT p.id, p.user_id, p.content, p.likes_count,
+	        p.parent_id, p.reply_to, p.image_url, p.created_at,
+	        u.username, COALESCE(u.avatar_url, '')
+	FROM posts p
+	LEFT JOIN users u ON p.user_id = u.id
+	WHERE p.user_id = $1
+	ORDER BY p.created_at DESC
 	LIMIT $2 OFFSET $3
 	`
 
@@ -43,6 +46,8 @@ func (r *PostsRepository) GetPostsByUser(
 			&model.ReplyTo,
 			&model.ImageURL,
 			&model.CreatedAt,
+			&model.Username,
+			&model.AvatarURL,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scan returning posts: %w", err)
@@ -56,6 +61,8 @@ func (r *PostsRepository) GetPostsByUser(
 			ReplyTo:    model.ReplyTo,
 			ImageURL:   model.ImageURL,
 			CreatedAt:  model.CreatedAt,
+			Username:   model.Username,
+			AvatarURL:  model.AvatarURL,
 		}
 		posts = append(posts, post)
 	}

@@ -7,6 +7,7 @@ import (
 
 type UserModel struct {
 	ID        string         `redis:"id"`
+	Username  string         `redis:"username"`
 	Email     string         `redis:"email"`
 	Password  string         `redis:"password"`
 	Role      string         `redis:"role"`

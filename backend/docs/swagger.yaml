@@ -37,6 +37,8 @@ definitions:
     type: object
   github_com_tryingmyb3st_PolyTweet_internal_core_domain.Post:
     properties:
+      avatar_url:
+        type: string
       content:
         maxLength: 280
         minLength: 1
@@ -54,6 +56,10 @@ definitions:
       reply_to:
         type: string
       user_id:
+        type: string
+      username:
+        maxLength: 15
+        minLength: 4
         type: string
     required:
     - content
@@ -84,17 +90,25 @@ definitions:
     properties:
       token:
         type: string
+      user_id:
+        type: string
+      username:
+        type: string
     type: object
   internal_features_auth_transport_http.PostResponse:
     properties:
+      avatar_url:
+        example: http://localhost:8333/6,0307364665
+        type: string
+        x-order: "5"
       content:
         example: '...'
         type: string
-        x-order: "1"
+        x-order: "2"
       created_at:
         example: timestamp
         type: string
-        x-order: "3"
+        x-order: "4"
       id:
         example: 24b6b463-266f-4916-b199-f833e6e334ce
         type: string
@@ -102,26 +116,30 @@ definitions:
       user_id:
         example: bba83b30-a3ba-4fa8-a6de-79c27b3f5946
         type: string
-        x-order: "2"
+        x-order: "3"
+      username:
+        example: m4rkek
+        type: string
+        x-order: "1"
     type: object
   internal_features_auth_transport_http.ProfileResponse:
     properties:
       avatar_url:
         example: http://localhost:8333/6,0307364665
         type: string
-        x-order: "3"
+        x-order: "4"
       bio:
         example: lol
         type: string
-        x-order: "4"
+        x-order: "5"
       created_at:
         example: timestamp
         type: string
-        x-order: "5"
+        x-order: "6"
       email:
         example: lol@gmail.com
         type: string
-        x-order: "1"
+        x-order: "2"
       id:
         example: http://localhost:8333/6,0307364665
         type: string
@@ -130,11 +148,15 @@ definitions:
         items:
           $ref: '#/definitions/internal_features_auth_transport_http.PostResponse'
         type: array
-        x-order: "6"
+        x-order: "7"
       role:
         example: admin
         type: string
-        x-order: "2"
+        x-order: "3"
+      username:
+        example: m4rkek
+        type: string
+        x-order: "1"
     type: object
   internal_features_auth_transport_http.RegisterDTO:
     properties:
@@ -145,33 +167,41 @@ definitions:
       password:
         example: supersecretpass
         type: string
-        x-order: "1"
+        x-order: "2"
       role:
         example: admin
         type: string
-        x-order: "2"
+        x-order: "3"
+      username:
+        example: m4rkek
+        type: string
+        x-order: "1"
     type: object
   internal_features_auth_transport_http.RegisterDTOResponse:
     properties:
       createdAt:
         example: "2026-03-25T12:00:41.267Z"
         type: string
-        x-order: "4"
+        x-order: "5"
       email:
         example: useremail@gmail.com
         type: string
-        x-order: "1"
+        x-order: "2"
       id:
         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
         type: string
         x-order: "0"
       password:
         type: string
-        x-order: "2"
+        x-order: "3"
       role:
         example: admin
         type: string
-        x-order: "3"
+        x-order: "4"
+      username:
+        example: m4rkek
+        type: string
+        x-order: "1"
     type: object
   internal_features_auth_transport_http.UpdateProfileRequest:
     properties:
@@ -283,14 +313,18 @@ definitions:
     type: object
   internal_features_posts_transport_http.GetPostByIdDTOResponse:
     properties:
+      avatar_url:
+        example: https://example.com/image.jpg
+        type: string
+        x-order: "8"
       content:
         example: Hello, world!
         type: string
-        x-order: "2"
+        x-order: "3"
       created_at:
         example: "2026-03-25T12:00:41.267Z"
         type: string
-        x-order: "7"
+        x-order: "9"
       id:
         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
         type: string
@@ -298,23 +332,33 @@ definitions:
       image_url:
         example: https://example.com/image.jpg
         type: string
-        x-order: "6"
+        x-order: "7"
       likes_count:
         example: 0
         type: integer
-        x-order: "3"
+        x-order: "4"
       parent_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
-        x-order: "4"
+        x-order: "5"
       reply_to:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
-        x-order: "5"
+        x-order: "6"
       user_id:
         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
         type: string
         x-order: "1"
+      username:
+        example: m4rkek
+        type: string
+        x-order: "2"
+    type: object
+  internal_features_posts_transport_http.UploadImageDTOResponse:
+    properties:
+      image_url:
+        example: https://example.com/image.jpg
+        type: string
     type: object
 host: 127.0.0.1:8080
 info:
@@ -678,6 +722,40 @@ paths:
       summary: Создание поста
       tags:
       - Posts
+  /posts/image:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загрузить изображение в SeaweedFS и возвращает URL
+      parameters:
+      - description: Файл изображения
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_posts_transport_http.UploadImageDTOResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Загрузить изображение для поста
+      tags:
+      - Posts
   /profile/avatar:
     post:
       consumes:
@@ -709,7 +787,7 @@ paths:
           description: Внутренняя ошибка сервера
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
-      summary: Загрузить аватарку пользотвалея
+      summary: Загрузить аватарку пользователя
       tags:
       - Profile
   /profile/update:
@@ -863,6 +941,35 @@ paths:
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
       summary: Получить профиль пользователя
+      tags:
+      - Profile
+  /users/me/profile:
+    get:
+      consumes:
+      - application/json
+      description: Получить профиль пользователя с постами по JWT
+      parameters:
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.ProfileResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Получить профиль пользователя по JWT
       tags:
       - Profile
 swagger: "2.0"

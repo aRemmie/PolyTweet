@@ -13,18 +13,21 @@ func (r *PostsRepository) GetLastWeekPosts(ctx context.Context, offset int, limi
 	defer cancel()
 
 	query := `
-	SELECT id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at
-    FROM posts
-    WHERE created_at > current_timestamp - interval '1 week'
-	ORDER BY created_at DESC
-	LIMIT $1 OFFSET $2
+	SELECT p.id, p.user_id, p.content, p.likes_count,
+	        p.parent_id, p.reply_to, p.image_url, p.created_at,
+	        u.username, COALESCE(u.avatar_url, '')
+    FROM posts p
+    LEFT JOIN users u ON p.user_id = u.id
+    WHERE p.created_at > current_timestamp - interval '1 week'
+	ORDER BY p.created_at DESC
+	LIMIT $1 OFFSET $2;
 	`
 
 	var posts []domain.Post
 
 	rows, err := r.ConnPool.Query(ctxTimeout, query, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("get recent posts: %w", err)
+		return nil, fmt.Errorf("get last week posts: %w", err)
 	}
 
 	for rows.Next() {
@@ -38,6 +41,8 @@ func (r *PostsRepository) GetLastWeekPosts(ctx context.Context, offset int, limi
 			&model.ReplyTo,
 			&model.ImageURL,
 			&model.CreatedAt,
+			&model.Username,
+			&model.AvatarURL,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("get recent posts: %w", err)
@@ -51,6 +56,8 @@ func (r *PostsRepository) GetLastWeekPosts(ctx context.Context, offset int, limi
 			ReplyTo:    model.ReplyTo,
 			ImageURL:   model.ImageURL,
 			CreatedAt:  model.CreatedAt,
+			Username:   model.Username,
+			AvatarURL:  model.AvatarURL,
 		}
 		posts = append(posts, post)
 	}

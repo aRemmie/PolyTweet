@@ -13,7 +13,7 @@ func (r *AuthRepository) GetUser(ctx context.Context, email string) (*domain.Use
 	defer cancel()
 
 	query := `
-	SELECT id, email, password, role, avatar_url, bio, created_at
+	SELECT id, username, email, password, role, avatar_url, bio, created_at
 	FROM users
 	WHERE email=$1
 	`
@@ -23,6 +23,7 @@ func (r *AuthRepository) GetUser(ctx context.Context, email string) (*domain.Use
 	var model auth_models.UserModel
 	err := row.Scan(
 		&model.ID,
+		&model.Username,
 		&model.Email,
 		&model.Password,
 		&model.Role,
@@ -36,6 +37,7 @@ func (r *AuthRepository) GetUser(ctx context.Context, email string) (*domain.Use
 
 	return &domain.User{
 		ID:        model.ID,
+		Username:  model.Username,
 		Email:     model.Email,
 		Password:  model.Password,
 		Role:      model.Role,

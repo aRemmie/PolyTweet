@@ -13,9 +13,12 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 	defer cancel()
 
 	query := `
-	SELECT id, user_id, content, likes_count, parent_id, reply_to, image_url, created_at
-	FROM posts
-	WHERE id = $1;
+	SELECT p.id, p.user_id, p.content, p.likes_count,
+	        p.parent_id, p.reply_to, p.image_url, p.created_at,
+	        u.username, COALESCE(u.avatar_url, '')
+	FROM posts p
+	LEFT JOIN users u ON p.user_id = u.id
+	WHERE p.id = $1;
 	`
 
 	row := r.ConnPool.QueryRow(ctxTimeout, query, postID)
@@ -30,6 +33,8 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 		&model.ReplyTo,
 		&model.ImageURL,
 		&model.CreatedAt,
+		&model.Username,
+		&model.AvatarURL,
 	)
 
 	if err != nil {
@@ -45,5 +50,7 @@ func (r *PostsRepository) GetPostByID(ctx context.Context, postID string) (*doma
 		ReplyTo:    model.ReplyTo,
 		ImageURL:   model.ImageURL,
 		CreatedAt:  model.CreatedAt,
+		Username:   model.Username,
+		AvatarURL:  model.AvatarURL,
 	}, nil
 }

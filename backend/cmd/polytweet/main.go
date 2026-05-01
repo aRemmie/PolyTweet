@@ -82,7 +82,7 @@ func main() {
 
 	log.Debug("initializing posts service")
 	cachePostsRepo := posts_cache.NewPostsCache(cache)
-	postsService := posts_service.NewPostsService(postsRepo, cachePostsRepo)
+	postsService := posts_service.NewPostsService(postsRepo, cachePostsRepo, storageClient)
 	postsHandler := posts_transport.NewPostsHandler(postsService)
 
 	serv.RegisterRoutes(postsHandler.Routes()...)

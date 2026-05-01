@@ -15,7 +15,6 @@ type CustomClaims struct {
 }
 
 func GenerateJWT(userId string, role string) (*string, error) {
-
 	expirationTime := time.Now().Add(12 * time.Hour)
 
 	claims := &CustomClaims{
