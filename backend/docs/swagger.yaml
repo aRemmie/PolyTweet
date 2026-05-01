@@ -354,6 +354,13 @@ definitions:
         type: string
         x-order: "2"
     type: object
+  internal_features_posts_transport_http.SearchPostsDTOResponse:
+    properties:
+      posts:
+        items:
+          $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.Post'
+        type: array
+    type: object
   internal_features_posts_transport_http.UploadImageDTOResponse:
     properties:
       image_url:
@@ -754,6 +761,46 @@ paths:
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
       summary: Загрузить изображение для поста
+      tags:
+      - Posts
+  /posts/search:
+    get:
+      consumes:
+      - application/json
+      description: Ищет посты по словам, переданным в query
+      parameters:
+      - description: Ключевые слова
+        in: query
+        maxLength: 100
+        minLength: 1
+        name: query
+        required: true
+        type: string
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Посты найдены
+          schema:
+            $ref: '#/definitions/internal_features_posts_transport_http.SearchPostsDTOResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "401":
+          description: Неверные учетные данные
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Поиск постов по словам
       tags:
       - Posts
   /profile/avatar:
