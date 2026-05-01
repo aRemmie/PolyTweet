@@ -943,4 +943,33 @@ paths:
       summary: Получить профиль пользователя
       tags:
       - Profile
+  /users/me/profile:
+    get:
+      consumes:
+      - application/json
+      description: Получить профиль пользователя с постами по JWT
+      parameters:
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.ProfileResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Получить профиль пользователя по JWT
+      tags:
+      - Profile
 swagger: "2.0"

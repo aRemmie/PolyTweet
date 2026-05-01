@@ -64,5 +64,11 @@ func (h *AuthHTTPHandler) Routes() []server.Route {
 			Handler:              h.UploadAvatar,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
+		{
+			Method:               "GET",
+			URL:                  "/users/me/profile",
+			Handler:              h.GetUserProfileByJWT,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
 	}
 }
