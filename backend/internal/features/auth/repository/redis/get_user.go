@@ -3,14 +3,14 @@ package auth_cache
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
-	auth_models "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository"
 )
 
 func (c *AuthCache) GetUser(ctx context.Context, email string) (*domain.User, error) {
-	var result auth_models.UserModel
+	var result UserModel
 
 	key := fmt.Sprintf("user:%s", email)
 
@@ -18,17 +18,22 @@ func (c *AuthCache) GetUser(ctx context.Context, email string) (*domain.User, er
 		return nil, fmt.Errorf("scan from cache: %w", err)
 	}
 
-	if result == (auth_models.UserModel{}) {
+	if reflect.DeepEqual(result, UserModel{}) {
 		return nil, redis.Nil
 	}
 
+	follows, _ := result.GetFollows()
+	followedBy, _ := result.GetFollowedBy()
+
 	return &domain.User{
-		ID:        result.ID,
-		Email:     email,
-		Password:  result.Password,
-		Role:      result.Role,
-		AvatarURL: result.AvatarURL.String,
-		Bio:       result.Bio.String,
-		CreatedAt: result.CreatedAt,
+		ID:         result.ID,
+		Email:      email,
+		Password:   result.Password,
+		Role:       result.Role,
+		AvatarURL:  result.AvatarURL.String,
+		Bio:        result.Bio.String,
+		Follows:    follows,
+		FollowedBy: followedBy,
+		CreatedAt:  result.CreatedAt,
 	}, nil
 }

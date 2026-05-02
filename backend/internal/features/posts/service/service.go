@@ -22,6 +22,7 @@ type PostsRepository interface {
 	GetLastWeekPosts(ctx context.Context, offset int, limit int) ([]domain.Post, error)
 	GetCountOfLastWeekPosts(ctx context.Context) (int64, error)
 	SearchPosts(ctx context.Context, query string) ([]domain.Post, error)
+	GetUserByID(ctx context.Context, userID string) (*domain.User, error)
 }
 
 type Cache interface {

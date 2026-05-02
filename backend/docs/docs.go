@@ -233,6 +233,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/follow": {
+            "get": {
+                "description": "Посты пользователей, на которых подписан авторизаванный юзер",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Посты пользователей, на которых подписан авторизаванный юзер",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Посты найдены",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_posts_transport_http.GetPostsByUserDTOResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные учетные данные",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/posts/image": {
             "post": {
                 "description": "Загрузить изображение в SeaweedFS и возвращает URL",
@@ -843,6 +893,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{UserId}/follow": {
+            "post": {
+                "description": "Подписаться авторизованным пользователем на другого пользователя по UserId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Подписаться на пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.FollowResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{UserId}/posts": {
             "get": {
                 "description": "Ищет посты пользователя по ID с поддержкой пагинации через параметры page и pageSize.",
@@ -953,6 +1054,57 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/internal_features_auth_transport_http.ProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{UserId}/unfollow": {
+            "post": {
+                "description": "Отписаться авторизованным пользователем от другого пользователя по UserId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Отписаться от пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "UserId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003cjwt токен\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_auth_transport_http.FollowResponse"
                         }
                     },
                     "400": {
@@ -1085,6 +1237,15 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_features_auth_transport_http.FollowResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
         "internal_features_auth_transport_http.LoginDTO": {
             "type": "object",
             "properties": {
@@ -1191,6 +1352,20 @@ const docTemplate = `{
                         "$ref": "#/definitions/internal_features_auth_transport_http.PostResponse"
                     },
                     "x-order": "7"
+                },
+                "follows": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "x-order": "8"
+                },
+                "followed_by": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "x-order": "9"
                 }
             }
         },
@@ -1256,15 +1431,15 @@ const docTemplate = `{
         "internal_features_auth_transport_http.UpdateProfileRequest": {
             "type": "object",
             "properties": {
-                "bio": {
-                    "type": "string",
-                    "x-order": "0",
-                    "example": "lol"
-                },
                 "avatar_url": {
                     "type": "string",
                     "x-order": "0",
                     "example": "http://localhost:8333/6,0307364665"
+                },
+                "bio": {
+                    "type": "string",
+                    "x-order": "0",
+                    "example": "lol"
                 }
             }
         },
@@ -1272,7 +1447,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "updated successfully"
                 }
             }
         },
@@ -1457,6 +1633,20 @@ const docTemplate = `{
                     "type": "string",
                     "x-order": "9",
                     "example": "2026-03-25T12:00:41.267Z"
+                }
+            }
+        },
+        "internal_features_posts_transport_http.GetPostsByUserDTOResponse": {
+            "type": "object",
+            "properties": {
+                "pagination": {
+                    "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.Pagination"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.Post"
+                    }
                 }
             }
         },

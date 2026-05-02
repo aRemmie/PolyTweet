@@ -15,7 +15,7 @@ type GetPostsByUserDTO struct {
 
 type GetPostsByUserDTOResponse struct {
 	Posts      []domain.Post      `json:"posts"`
-	Pagination *domain.Pagination `json:"pagination"`
+	Pagination *domain.Pagination `json:"pagination,omitempty"`
 }
 
 // GetPostsByUser godoc

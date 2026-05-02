@@ -51,14 +51,16 @@ func (h *AuthHTTPHandler) GetUserProfileByJWT(w http.ResponseWriter, r *http.Req
 	}
 
 	profileResp := ProfileResponse{
-		ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		Role:      user.Role,
-		AvatarURL: user.AvatarURL,
-		Bio:       user.Bio,
-		CreatedAt: user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		Posts:     postResponses,
+		ID:         user.ID,
+		Username:   user.Username,
+		Email:      user.Email,
+		Role:       user.Role,
+		AvatarURL:  user.AvatarURL,
+		Bio:        user.Bio,
+		Follows:    user.Follows,
+		FollowedBy: user.FollowedBy,
+		CreatedAt:  user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		Posts:      postResponses,
 	}
 
 	respWriter.JSONResponse(profileResp, http.StatusOK)
