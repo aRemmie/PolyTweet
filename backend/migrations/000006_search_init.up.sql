@@ -34,3 +34,7 @@ CREATE INDEX idx_posts_search_vector
 CREATE INDEX idx_posts_search_date
     ON posts (created_at DESC)
     WHERE search_vector IS NOT NULL;
+
+ALTER TABLE users ADD COLUMN follows TEXT[];
+
+ALTER TABLE users ADD COLUMN followed_by TEXT[];

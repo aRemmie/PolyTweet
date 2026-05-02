@@ -77,6 +77,12 @@ definitions:
       token:
         type: string
     type: object
+  internal_features_auth_transport_http.FollowResponse:
+    properties:
+      message:
+        example: success
+        type: string
+    type: object
   internal_features_auth_transport_http.LoginDTO:
     properties:
       email:
@@ -140,6 +146,16 @@ definitions:
         example: lol@gmail.com
         type: string
         x-order: "2"
+      followed_by:
+        items:
+          type: string
+        type: array
+        x-order: "9"
+      follows:
+        items:
+          type: string
+        type: array
+        x-order: "8"
       id:
         example: http://localhost:8333/6,0307364665
         type: string
@@ -217,6 +233,7 @@ definitions:
   internal_features_auth_transport_http.UpdateProfileResp:
     properties:
       message:
+        example: updated successfully
         type: string
     type: object
   internal_features_auth_transport_http.UploadAvatarResponse:
@@ -353,6 +370,15 @@ definitions:
         example: m4rkek
         type: string
         x-order: "2"
+    type: object
+  internal_features_posts_transport_http.GetPostsByUserDTOResponse:
+    properties:
+      pagination:
+        $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.Pagination'
+      posts:
+        items:
+          $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.Post'
+        type: array
     type: object
   internal_features_posts_transport_http.SearchPostsDTOResponse:
     properties:
@@ -729,6 +755,39 @@ paths:
       summary: Создание поста
       tags:
       - Posts
+  /posts/follow:
+    get:
+      consumes:
+      - application/json
+      description: Посты пользователей, на которых подписан авторизаванный юзер
+      parameters:
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Посты найдены
+          schema:
+            $ref: '#/definitions/internal_features_posts_transport_http.GetPostsByUserDTOResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "401":
+          description: Неверные учетные данные
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Посты пользователей, на которых подписан авторизаванный юзер
+      tags:
+      - Posts
   /posts/image:
     post:
       consumes:
@@ -902,6 +961,41 @@ paths:
       summary: Регистрация пользователя
       tags:
       - Auth
+  /users/{UserId}/follow:
+    post:
+      consumes:
+      - application/json
+      description: Подписаться авторизованным пользователем на другого пользователя
+        по UserId
+      parameters:
+      - description: User ID
+        in: path
+        name: UserId
+        required: true
+        type: string
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный запрос
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.FollowResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Подписаться на пользователя
+      tags:
+      - Profile
   /users/{UserId}/posts:
     get:
       consumes:
@@ -988,6 +1082,41 @@ paths:
           schema:
             $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
       summary: Получить профиль пользователя
+      tags:
+      - Profile
+  /users/{UserId}/unfollow:
+    post:
+      consumes:
+      - application/json
+      description: Отписаться авторизованным пользователем от другого пользователя
+        по UserId
+      parameters:
+      - description: User ID
+        in: path
+        name: UserId
+        required: true
+        type: string
+      - description: Bearer <jwt токен>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный запрос
+          schema:
+            $ref: '#/definitions/internal_features_auth_transport_http.FollowResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.CustomError'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/github_com_tryingmyb3st_PolyTweet_internal_core_domain.InternalError'
+      summary: Отписаться от пользователя
       tags:
       - Profile
   /users/me/profile:

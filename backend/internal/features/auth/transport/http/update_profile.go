@@ -16,7 +16,7 @@ type UpdateProfileRequest struct {
 }
 
 type UpdateProfileResp struct {
-	Message string `json:"message"`
+	Message string `json:"message" example:"updated successfully"`
 }
 
 // UpdateUserProfile godoc

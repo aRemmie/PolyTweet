@@ -29,6 +29,7 @@ type PostsService interface {
 	) ([]domain.Post, *domain.Pagination, error)
 	UploadImage(ctx context.Context, file multipart.File, filename string) (string, error)
 	SearchPosts(ctx context.Context, search domain.Search) ([]domain.Post, error)
+	GetPostsByFollow(ctx context.Context, userID string) ([]domain.Post, error)
 }
 
 func NewPostsHandler(postsService PostsService) *PostsHTTPHandler {
@@ -79,6 +80,12 @@ func (h *PostsHTTPHandler) Routes() []server.Route {
 			Method:               http.MethodGet,
 			URL:                  "/posts/search",
 			Handler:              h.SearchPosts,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               http.MethodGet,
+			URL:                  "/posts/follow",
+			Handler:              h.GetPostsByFollow,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
 	}

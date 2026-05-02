@@ -21,6 +21,8 @@ type AuthService interface {
 	GetUserProfileWithPosts(ctx context.Context, userID string) (*domain.User, []domain.Post, error)
 	UpdateUserProfile(ctx context.Context, userID, avatarURL, bio string) error
 	UploadAvatar(ctx context.Context, userID string, file multipart.File, filename string) (string, error)
+	FollowUser(ctx context.Context, userToFollow, userID string) error
+	UnfollowUser(ctx context.Context, userToFollow, userID string) error
 }
 
 func NewAuthHandler(authServ AuthService) *AuthHTTPHandler {
@@ -68,6 +70,18 @@ func (h *AuthHTTPHandler) Routes() []server.Route {
 			Method:               "GET",
 			URL:                  "/users/me/profile",
 			Handler:              h.GetUserProfileByJWT,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               "POST",
+			URL:                  "/users/{UserId}/follow",
+			Handler:              h.FollowUserByUserID,
+			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
+		},
+		{
+			Method:               "POST",
+			URL:                  "/users/{UserId}/unfollow",
+			Handler:              h.UnfollowUserByUserID,
 			AdditionalMiddleware: []middleware.Middleware{middleware.AuthMiddleware()},
 		},
 	}

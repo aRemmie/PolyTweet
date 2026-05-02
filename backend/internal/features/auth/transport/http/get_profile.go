@@ -19,14 +19,16 @@ type PostResponse struct {
 }
 
 type ProfileResponse struct {
-	ID        string         `json:"id" example:"http://localhost:8333/6,0307364665" extensions:"x-order=0"`
-	Username  string         `json:"username" example:"m4rkek" extensions:"x-order=1"`
-	Email     string         `json:"email" example:"lol@gmail.com" extensions:"x-order=2"`
-	Role      string         `json:"role" example:"admin" extensions:"x-order=3"`
-	AvatarURL string         `json:"avatar_url" example:"http://localhost:8333/6,0307364665" extensions:"x-order=4"`
-	Bio       string         `json:"bio" example:"lol" extensions:"x-order=5"`
-	CreatedAt string         `json:"created_at" example:"timestamp" extensions:"x-order=6"`
-	Posts     []PostResponse `json:"posts" extensions:"x-order=7"`
+	ID         string         `json:"id" example:"http://localhost:8333/6,0307364665" extensions:"x-order=0"`
+	Username   string         `json:"username" example:"m4rkek" extensions:"x-order=1"`
+	Email      string         `json:"email" example:"lol@gmail.com" extensions:"x-order=2"`
+	Role       string         `json:"role" example:"admin" extensions:"x-order=3"`
+	AvatarURL  string         `json:"avatar_url" example:"http://localhost:8333/6,0307364665" extensions:"x-order=4"`
+	Bio        string         `json:"bio" example:"lol" extensions:"x-order=5"`
+	CreatedAt  string         `json:"created_at" example:"timestamp" extensions:"x-order=6"`
+	Posts      []PostResponse `json:"posts" extensions:"x-order=7"`
+	Follows    []string       `json:"follows" extensions:"x-order=8"`
+	FollowedBy []string       `json:"followed_by" extensions:"x-order=9"`
 }
 
 // GetUserProfile godoc
@@ -72,14 +74,16 @@ func (h *AuthHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request)
 	}
 
 	profileResp := ProfileResponse{
-		ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		Role:      user.Role,
-		AvatarURL: user.AvatarURL,
-		Bio:       user.Bio,
-		CreatedAt: user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		Posts:     postResponses,
+		ID:         user.ID,
+		Username:   user.Username,
+		Email:      user.Email,
+		Role:       user.Role,
+		AvatarURL:  user.AvatarURL,
+		Bio:        user.Bio,
+		CreatedAt:  user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		Posts:      postResponses,
+		Follows:    user.Follows,
+		FollowedBy: user.FollowedBy,
 	}
 
 	respWriter.JSONResponse(profileResp, http.StatusOK)

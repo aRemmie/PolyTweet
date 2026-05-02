@@ -19,6 +19,8 @@ type AuthRepository interface {
 	GetUser(ctx context.Context, email string) (*domain.User, error)
 	GetUserByID(ctx context.Context, userID string) (*domain.User, error)
 	UpdateUserProfile(ctx context.Context, userID, avatarURL, bio string) error
+	AddFollowerToUser(ctx context.Context, userToFollow, userID string) error
+	RemoveFollowerFromUser(ctx context.Context, userToFollow, userID string) error
 }
 
 type Cache interface {

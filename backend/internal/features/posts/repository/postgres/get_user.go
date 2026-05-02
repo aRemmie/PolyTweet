@@ -1,4 +1,4 @@
-package auth_repository
+package postgres
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	auth_models "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository"
 )
 
-func (r *AuthRepository) GetUserByID(ctx context.Context, userID string) (*domain.User, error) {
+func (r *PostsRepository) GetUserByID(ctx context.Context, userID string) (*domain.User, error) {
 	ctxTimeout, cancel := context.WithTimeout(ctx, r.ConnPool.OpTimeout())
 	defer cancel()
 

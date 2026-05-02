@@ -8,11 +8,10 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tryingmyb3st/PolyTweet/internal/core/domain"
-	auth_models "github.com/tryingmyb3st/PolyTweet/internal/features/auth/repository"
 )
 
 func (c *AuthCache) SaveUser(user *domain.User) error {
-	model := auth_models.UserModel{
+	model := UserModel{
 		ID:        user.ID,
 		Email:     user.Email,
 		Password:  user.Password,
@@ -21,6 +20,9 @@ func (c *AuthCache) SaveUser(user *domain.User) error {
 		Bio:       sql.NullString{String: user.Bio, Valid: user.Bio != ""},
 		CreatedAt: user.CreatedAt,
 	}
+
+	model.SetFollows(user.Follows)
+	model.SetFollowedBy(user.FollowedBy)
 
 	key := fmt.Sprintf("user:%s", model.Email)
 	keyByID := fmt.Sprintf("user:id:%s", model.ID)
@@ -33,6 +35,8 @@ func (c *AuthCache) SaveUser(user *domain.User) error {
 		rdb.HSet(ctx, key, "role", model.Role)
 		rdb.HSet(ctx, key, "avatar_url", model.AvatarURL.String)
 		rdb.HSet(ctx, key, "bio", model.Bio.String)
+		rdb.HSet(ctx, key, "follows", model.Follows)
+		rdb.HSet(ctx, key, "followed_by", model.FollowedBy)
 		rdb.HSet(ctx, key, "createdAt", model.CreatedAt)
 
 		rdb.HSet(ctx, keyByID, "id", model.ID)
@@ -41,6 +45,8 @@ func (c *AuthCache) SaveUser(user *domain.User) error {
 		rdb.HSet(ctx, keyByID, "role", model.Role)
 		rdb.HSet(ctx, keyByID, "avatar_url", model.AvatarURL.String)
 		rdb.HSet(ctx, keyByID, "bio", model.Bio.String)
+		rdb.HSet(ctx, keyByID, "follows", model.Follows)
+		rdb.HSet(ctx, keyByID, "followed_by", model.FollowedBy)
 		rdb.HSet(ctx, keyByID, "createdAt", model.CreatedAt)
 		return nil
 	})
