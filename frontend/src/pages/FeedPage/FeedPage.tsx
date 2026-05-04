@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { usePostStore } from '../../stores/usePostStore';
@@ -10,21 +10,67 @@ import { toast } from 'react-toastify';
 import styles from './FeedPage.module.scss';
 import { useProfileStore } from '../../stores/useProfileStore';
 
+const PAGE_SIZE = 15;
+
 const FeedPage: React.FC = () => {
     const navigate = useNavigate();
     const isAuth = useAuthStore((state) => state.isAuth);
     const userId = useAuthStore((state) => state.userId);
-    const { posts, isLoading, fetchFeed, createPost, deletePost } = usePostStore();
+    const {
+        posts,
+        isLoading,
+        isFetchingMore,
+        hasMore,
+        fetchFeed,
+        fetchMoreFeed,
+        fetchFollowFeed,
+        createPost,
+        deletePost,
+    } = usePostStore();
     const { addPostToState } = useProfileStore();
     const [isCreating, setIsCreating] = useState(false);
+    const [feedMode, setFeedMode] = useState<'all' | 'following'>('all');
+
+    const sentinelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!isAuth) {
             navigate('/auth');
             return;
         }
-        fetchFeed(1, 20);
-    }, [isAuth, navigate]);
+        if (feedMode === 'following') {
+            fetchFollowFeed();
+        } else {
+            fetchFeed(1, PAGE_SIZE);
+        }
+    }, [isAuth, navigate, feedMode]);
+
+    const handleSentinel = useCallback(
+        (entries: IntersectionObserverEntry[]) => {
+            const [entry] = entries;
+            if (
+                entry.isIntersecting &&
+                feedMode === 'all' &&
+                hasMore &&
+                !isFetchingMore &&
+                !isLoading
+            ) {
+                fetchMoreFeed(PAGE_SIZE);
+            }
+        },
+        [feedMode, hasMore, isFetchingMore, isLoading, fetchMoreFeed],
+    );
+
+    useEffect(() => {
+        const sentinel = sentinelRef.current;
+        if (!sentinel) return;
+
+        const observer = new IntersectionObserver(handleSentinel, {
+            rootMargin: '200px',
+        });
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, [handleSentinel]);
 
     const handleCreatePost = async (content: string, image_url?: string) => {
         setIsCreating(true);
@@ -34,7 +80,7 @@ const FeedPage: React.FC = () => {
                 addPostToState(newPost);
             }
             toast.success('Post created!');
-        } catch (error) {
+        } catch {
             toast.error('Failed to create post');
         } finally {
             setIsCreating(false);
@@ -46,7 +92,7 @@ const FeedPage: React.FC = () => {
             try {
                 await deletePost(id);
                 toast.success('Post deleted');
-            } catch (error) {
+            } catch {
                 toast.error('Failed to delete post');
             }
         }
@@ -61,6 +107,20 @@ const FeedPage: React.FC = () => {
             <div className={styles.feed}>
                 <div className={styles.header}>
                     <h1>Home</h1>
+                    <div className={styles.feedTabs}>
+                        <button
+                            className={`${styles.feedTab} ${feedMode === 'all' ? styles.feedTabActive : ''}`}
+                            onClick={() => setFeedMode('all')}
+                        >
+                            For you
+                        </button>
+                        <button
+                            className={`${styles.feedTab} ${feedMode === 'following' ? styles.feedTabActive : ''}`}
+                            onClick={() => setFeedMode('following')}
+                        >
+                            Following
+                        </button>
+                    </div>
                 </div>
 
                 <div className={styles.scrollableContent}>
@@ -69,7 +129,7 @@ const FeedPage: React.FC = () => {
                     <div className={styles.spacer} />
 
                     {isLoading && posts.length === 0 ? (
-                        <div className={styles.loading}>Loading posts...</div>
+                        <div className={styles.loading}>Loading posts…</div>
                     ) : (
                         <>
                             {posts.map((post) => (
@@ -80,10 +140,19 @@ const FeedPage: React.FC = () => {
                                     currentUserId={userId || undefined}
                                 />
                             ))}
+
                             {posts.length === 0 && !isLoading && (
                                 <div className={styles.empty}>
                                     No posts yet. Be the first to post!
                                 </div>
+                            )}
+
+                            <div ref={sentinelRef} style={{ height: 1 }} />
+
+                            {isFetchingMore && <div className={styles.loading}>Loading more…</div>}
+
+                            {!hasMore && posts.length > 0 && feedMode === 'all' && (
+                                <div className={styles.empty}>You've reached the end</div>
                             )}
                         </>
                     )}

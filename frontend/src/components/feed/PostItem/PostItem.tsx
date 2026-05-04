@@ -22,9 +22,11 @@ const PostItem: React.FC<PostItemProps> = ({
     isReply = false,
     disableNavigation = false,
 }) => {
-    const { profilesCache, fetchProfile, removePost } = useProfileStore();
-    const author = profilesCache[post.user_id];
+    const { removePost } = useProfileStore();
     const isAuthor = currentUserId === post.user_id;
+
+    const authorName = post.username ?? post.user_id?.slice(0, 8) ?? 'Unknown';
+    const authorAvatar = post.avatar_url;
 
     const { likePost, unlikePost, likedPosts, createPost } = usePostStore();
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
@@ -47,9 +49,6 @@ const PostItem: React.FC<PostItemProps> = ({
 
     useEffect(() => {
         setIsLiked(likedPosts.has(post.id));
-        if (post.user_id) {
-            fetchProfile(post.user_id);
-        }
     }, [likedPosts, post.id]);
 
     const handleLike = async (e: React.MouseEvent) => {
@@ -97,7 +96,9 @@ const PostItem: React.FC<PostItemProps> = ({
     const handleDeleteClick = async (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsMenuOpen(false);
-        onDelete(post.id);
+        if (onDelete) {
+            onDelete(post.id);
+        }
         removePost(post.id);
     };
     const handleReplyClick = (e: React.MouseEvent) => {
@@ -115,11 +116,11 @@ const PostItem: React.FC<PostItemProps> = ({
                 <div className={styles.container}>
                     <div className={styles.side}>
                         <div className={styles.avatar} onClick={handleProfileClick}>
-                            {author && author.avatar_url ? (
-                                <img src={author.avatar_url} alt="avatar" />
+                            {authorAvatar ? (
+                                <img src={authorAvatar} alt="avatar" />
                             ) : (
                                 <img
-                                    src={`https://ui-avatars.com/api/?name=${author ? author.email.split('@')[0].slice(0, 2) : ' '}&background=1DA1F2&color=fff`}
+                                    src={`https://ui-avatars.com/api/?name=${authorName.slice(0, 2)}&background=1DA1F2&color=fff`}
                                     alt="Avatar"
                                 />
                             )}
@@ -128,9 +129,7 @@ const PostItem: React.FC<PostItemProps> = ({
                     <div className={styles.main}>
                         <div className={styles.headerRow}>
                             <div className={styles.user} onClick={handleProfileClick}>
-                                <span className={styles.name}>
-                                    {author ? author.email.split('@')[0] : 'Loading...'}
-                                </span>
+                                <span className={styles.name}>{authorName}</span>
                                 <span className={styles.username}>
                                     @{post.user_id?.slice(0, 8)}
                                 </span>

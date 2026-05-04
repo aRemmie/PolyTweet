@@ -33,10 +33,13 @@ const PostDetailPage: React.FC = () => {
     const fetchPostAndReplies = async () => {
         setIsLoading(true);
         try {
+            // Fetch the main post
             const postData = await PostService.getPostById(id!);
             const transformedPost: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost = {
                 id: postData.id || '',
                 user_id: postData.user_id || '',
+                username: postData.username,
+                avatar_url: postData.avatar_url,
                 content: postData.content || '',
                 created_at: postData.created_at || new Date().toISOString(),
                 parent_id: postData.parent_id,
@@ -46,22 +49,22 @@ const PostDetailPage: React.FC = () => {
             };
             setPost(transformedPost);
 
-            const repliesData = await PostService.getReplies(1, 50);
-            const postReplies: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost[] = (
+            const repliesData = await PostService.getRepliesForPost(id!);
+            const mapped: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost[] = (
                 repliesData.posts || []
-            )
-                .filter((reply) => reply.parent_id === id || reply.reply_to === id)
-                .map((reply) => ({
-                    id: reply.id || '',
-                    user_id: reply.user_id || '',
-                    content: reply.content || '',
-                    created_at: reply.created_at || new Date().toISOString(),
-                    parent_id: reply.parent_id,
-                    reply_to: reply.reply_to,
-                    image_url: reply.image_url,
-                    likes_count: reply.likes_count || 0,
-                }));
-            setReplies(postReplies);
+            ).map((reply) => ({
+                id: reply.id || '',
+                user_id: reply.user_id || '',
+                username: reply.username,
+                avatar_url: reply.avatar_url,
+                content: reply.content || '',
+                created_at: reply.created_at || new Date().toISOString(),
+                parent_id: reply.parent_id,
+                reply_to: reply.reply_to,
+                image_url: reply.image_url,
+                likes_count: reply.likes_count || 0,
+            }));
+            setReplies(mapped);
         } catch (error) {
             console.error('Error fetching post:', error);
             navigate('/feed');
@@ -97,10 +100,6 @@ const PostDetailPage: React.FC = () => {
         }
     };
 
-    const handleGoBack = () => {
-        navigate(-1);
-    };
-
     if (isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -109,9 +108,7 @@ const PostDetailPage: React.FC = () => {
         );
     }
 
-    if (!post) {
-        return null;
-    }
+    if (!post) return null;
 
     return (
         <div className={styles.postDetailPage}>
@@ -119,7 +116,7 @@ const PostDetailPage: React.FC = () => {
 
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <button className={styles.backButton} onClick={handleGoBack}>
+                    <button className={styles.backButton} onClick={() => navigate(-1)}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M15 18L9 12L15 6"
@@ -191,8 +188,9 @@ const PostDetailPage: React.FC = () => {
                 onSubmit={handleReply}
                 mode="reply"
                 parentPostContent={post.content}
-                parentPostAuthor={post.user_id?.slice(0, 8)}
+                parentPostAuthor={post.username || post.user_id?.slice(0, 8)}
             />
+
             <RightPanel />
         </div>
     );

@@ -25,7 +25,7 @@ export class Profile<SecurityDataType = unknown> extends HttpClient<SecurityData
      *
      * @tags Profile
      * @name AvatarCreate
-     * @summary Загрузить аватарку пользотвалея
+     * @summary Загрузить аватарку пользователя
      * @request POST:/profile/avatar
      */
     avatarCreate = (

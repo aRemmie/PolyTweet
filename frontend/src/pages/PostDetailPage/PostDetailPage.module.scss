@@ -21,6 +21,12 @@
     position: relative;
     flex-shrink: 1;
     transition: all 0.3s ease;
+
+    @media (max-width: 768px) {
+        max-width: 100%;
+        border-left: none;
+        border-right: none;
+    }
 }
 
 .header {

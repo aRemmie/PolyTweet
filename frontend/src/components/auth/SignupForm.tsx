@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TextField from '../shared/TextField/TextField';
 import Button from '../shared/Button/Button';
 import Select from '../shared/Select/Select';
@@ -10,16 +10,24 @@ import styles from './AuthForms.module.scss';
 
 interface SignupFormValues {
     email: string;
+    username: string;
     password: string;
     role: string;
 }
 
+const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
+
 const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Email is Required ;('),
+    username: Yup.string()
+        .min(4, 'Username must be at least 4 characters')
+        .max(15, 'Username must be at most 15 characters')
+        .matches(USERNAME_REGEX, 'Username can only contain letters, digits and underscores')
+        .required('Username is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
     password: Yup.string()
-        .min(6, 'Password must be at least 6 characters????')
-        .required('Password is Required :((('),
-    role: Yup.string().required('Role is Required :3'),
+        .min(6, 'Password must be at least 6 characters')
+        .required('Password is required'),
+    role: Yup.string().required('Role is required'),
 });
 
 const roleOptions = [
@@ -34,6 +42,7 @@ const SignupForm = () => {
 
     const formik = useFormik<SignupFormValues>({
         initialValues: {
+            username: '',
             email: '',
             password: '',
             role: 'user',
@@ -41,14 +50,29 @@ const SignupForm = () => {
         validationSchema,
         onSubmit: async (values: SignupFormValues) => {
             try {
-                await register(values.email, values.password, values.role);
-                toast.success('ПОБЕДАААА');
-                navigate('/feed');
-                formik.resetForm();
+                await register(values.email, values.username, values.password, values.role);
+                toast.success('Welcome to PolyTweet!');
+                //navigate('/feed');
             } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.message || 'Registration failed. Please try again.';
-                toast.error(errorMessage);
+                const serverMessage: string = error.response?.data?.message || error.message || '';
+
+                if (
+                    serverMessage.toLowerCase().includes('username') &&
+                    (serverMessage.toLowerCase().includes('taken') ||
+                        serverMessage.toLowerCase().includes('exist') ||
+                        serverMessage.toLowerCase().includes('already'))
+                ) {
+                    formik.setFieldError('username', 'This username is already taken');
+                } else if (
+                    serverMessage.toLowerCase().includes('email') &&
+                    (serverMessage.toLowerCase().includes('taken') ||
+                        serverMessage.toLowerCase().includes('exist') ||
+                        serverMessage.toLowerCase().includes('already'))
+                ) {
+                    formik.setFieldError('email', 'An account with this email already exists');
+                } else {
+                    toast.error(serverMessage || 'Registration failed. Please try again.');
+                }
             }
         },
     });
@@ -56,6 +80,17 @@ const SignupForm = () => {
     return (
         <form onSubmit={formik.handleSubmit} className={styles.form}>
             <h1 className={styles.title}>Create your account</h1>
+
+            <TextField
+                name="username"
+                type="text"
+                placeholder="Username"
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.username}
+                touched={formik.touched.username}
+            />
 
             <TextField
                 name="email"

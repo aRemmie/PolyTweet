@@ -4,6 +4,8 @@ import type {
     InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse,
     InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse,
     InternalFeaturesPostsTransportHttpDeletePostDTOResponse,
+    InternalFeaturesPostsTransportHttpUploadImageDTOResponse,
+    InternalFeaturesPostsTransportHttpSearchPostsDTOResponse,
 } from '../generated/data-contracts';
 
 export class PostService {
@@ -14,12 +16,7 @@ export class PostService {
         const response =
             await $api.get<InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse>(
                 '/posts/all',
-                {
-                    params: {
-                        page: page,
-                        page_size: pageSize,
-                    },
-                },
+                { params: { page, page_size: pageSize } },
             );
         return response.data;
     }
@@ -33,15 +30,26 @@ export class PostService {
         if (!content || content.trim().length === 0) {
             throw new Error('Post content cannot be empty');
         }
-
         const request: InternalFeaturesPostsTransportHttpCreatePostDTO = {
             content: content.trim(),
             image_url: image_url || undefined,
             parent_id: parent_id || undefined,
             reply_to: reply_to || undefined,
         };
-
         const response = await $api.post('/posts/create', request);
+        return response.data;
+    }
+
+    static async uploadImage(
+        file: File,
+    ): Promise<InternalFeaturesPostsTransportHttpUploadImageDTOResponse> {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await $api.post<InternalFeaturesPostsTransportHttpUploadImageDTOResponse>(
+            '/posts/image',
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
         return response.data;
     }
 
@@ -59,22 +67,33 @@ export class PostService {
         return response.data;
     }
 
-    static async getReplies(
-        page: number = 1,
-        pageSize: number = 15,
+    static async getRepliesForPost(
+        postId: string,
     ): Promise<InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse> {
+        const response = await PostService.getFeed(1, 50);
+        const filtered = (response.posts || []).filter(
+            (p) => p.parent_id === postId || p.reply_to === postId,
+        );
+        return { posts: filtered, pagination: response.pagination };
+    }
+
+    static async searchPosts(
+        query: string,
+    ): Promise<InternalFeaturesPostsTransportHttpSearchPostsDTOResponse> {
+        const response = await $api.get<InternalFeaturesPostsTransportHttpSearchPostsDTOResponse>(
+            '/posts/search',
+            { params: { query } },
+        );
+        return response.data;
+    }
+
+    static async getFollowFeed(): Promise<InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse> {
         const response =
             await $api.get<InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse>(
-                '/posts/all',
-                {
-                    params: {
-                        page: page,
-                        page_size: pageSize,
-                    },
-                },
+                '/posts/follow',
             );
         return response.data;
-    } //потом будет другой метод (пж), пока этот для отладки
+    }
 
     static async likePost(postId: string): Promise<void> {
         await $api.post(`/posts/${postId}/like`);

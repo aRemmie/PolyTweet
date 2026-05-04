@@ -1,86 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/useAuthStore';
 import { usePostStore } from '../../../stores/usePostStore';
 import { PostService } from '../../../services/PostService';
 import { GithubComTryingmyb3StPolyTweetInternalCoreDomainPost } from '../../../generated/data-contracts';
-import PostItem from '../PostItem/PostItem';
 import styles from './RightPanel.module.scss';
 import { formatRelativeTime } from '../../../utils/date.utils';
 
 const RightPanel: React.FC = () => {
     const navigate = useNavigate();
-    const email = useAuthStore((state) => state.email);
     const userId = useAuthStore((state) => state.userId);
     const { posts, fetchFeed } = usePostStore();
-    const [searchId, setSearchId] = useState('');
-    const [searchResult, setSearchResult] =
-        useState<GithubComTryingmyb3StPolyTweetInternalCoreDomainPost | null>(null);
+
+    const [query, setQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<
+        GithubComTryingmyb3StPolyTweetInternalCoreDomainPost[] | null
+    >(null);
     const [searchLoading, setSearchLoading] = useState(false);
     const [searchError, setSearchError] = useState('');
 
+    // Debounce ref — search triggers 400ms after the user stops typing
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     useEffect(() => {
-        const fetchLatestPosts = async () => {
-            try {
-                await fetchFeed(1, 6);
-            } catch (error) {
-                console.error('Error fetching latest posts:', error);
-            }
-        };
-        fetchLatestPosts();
+        fetchFeed(1, 6).catch(console.error);
     }, []);
 
-    const handleSearch = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!searchId.trim()) return;
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
 
-        setSearchLoading(true);
-        setSearchError('');
-        setSearchResult(null);
-
-        try {
-            const post = await PostService.getPostById(searchId.trim());
-            if (post) {
-                const transformedPost: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost = {
-                    id: post.id || '',
-                    user_id: post.user_id || '',
-                    content: post.content || '',
-                    created_at: post.created_at || new Date().toISOString(),
-                    parent_id: post.parent_id,
-                    reply_to: post.reply_to,
-                    image_url: post.image_url,
-                    likes_count: post.likes_count || 0,
-                };
-                setSearchResult(transformedPost);
-            } else {
-                setSearchError('Post not found');
-            }
-        } catch (error) {
-            console.error('Error searching post:', error);
-            setSearchError('Not found, try something else');
-        } finally {
-            setSearchLoading(false);
+        const trimmed = query.trim();
+        if (!trimmed) {
+            setSearchResults(null);
+            setSearchError('');
+            return;
         }
-    };
+
+        debounceRef.current = setTimeout(async () => {
+            setSearchLoading(true);
+            setSearchError('');
+            try {
+                const res = await PostService.searchPosts(trimmed);
+                const posts = res.posts || [];
+                if (posts.length === 0) {
+                    setSearchError('Nothing found');
+                    setSearchResults(null);
+                } else {
+                    setSearchResults(posts);
+                }
+            } catch {
+                setSearchError('Search failed, try again');
+                setSearchResults(null);
+            } finally {
+                setSearchLoading(false);
+            }
+        }, 400);
+
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [query]);
 
     const handlePostClick = (postId: string) => {
         navigate(`/post/${postId}`);
     };
 
     const latestPosts = posts.slice(0, 6);
-
-    // todo: сюда бы метод для рекомендуемых пользователей
-    // const currentUser = {
-    //     name: email?.split('@')[0] || 'User',
-    //     username: email?.split('@')[0] || 'user',
-    //     avatar: email?.[0]?.toUpperCase() || 'U'
-    // };
-
-    // const whoToFollow = [currentUser, currentUser, currentUser];
+    const showResults = searchResults !== null || searchError || searchLoading;
 
     return (
         <div className={styles.rightPanel}>
-            <form onSubmit={handleSearch} className={styles.searchBar}>
+            {/* Search bar */}
+            <div className={styles.searchBar}>
                 <svg width="16" height="19" viewBox="0 0 24 24" fill="none">
                     <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2" />
                     <path
@@ -92,112 +83,135 @@ const RightPanel: React.FC = () => {
                 </svg>
                 <input
                     type="text"
-                    placeholder="Search post by ID..."
-                    value={searchId}
-                    onChange={(e) => setSearchId(e.target.value)}
+                    placeholder="Search posts..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                 />
-            </form>
-
-            {searchResult && (
-                <div className={styles.searchResultSection}>
-                    <h3>Search result</h3>
-                    <div className={styles.searchResultContent}>
-                        <PostItem
-                            post={searchResult}
-                            currentUserId={userId || undefined}
-                            disableNavigation={false}
-                            onDelete={() => {}}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {searchError && (
-                <div className={styles.searchErrorSection}>
-                    <h3>Search result</h3>
-                    <div className={styles.errorMessage}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                            <path
-                                d="M12 8v4M12 16h.01"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-                        </svg>
-                        <p>{searchError}</p>
-                    </div>
-                </div>
-            )}
-
-            <div className={styles.newsSection}>
-                <h3>Latest posts</h3>
-                {latestPosts.length === 0 ? (
-                    <div className={styles.emptyMessage}>No posts yet</div>
-                ) : (
-                    latestPosts.map((post) => (
-                        <React.Fragment key={post.id}>
-                            <div
-                                className={styles.newsItem}
-                                onClick={() => handlePostClick(post.id)}
-                            >
-                                <div className={styles.text}>
-                                    <div className={styles.topic}>
-                                        <span>Post</span>
-                                        <span className={styles.dot}>·</span>
-                                        <span className={styles.time}>
-                                            {formatRelativeTime(
-                                                post.created_at || new Date().toISOString(),
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className={styles.title}>
-                                        {post.content.length > 100
-                                            ? post.content.substring(0, 100) + '...'
-                                            : post.content}
-                                    </div>
-                                    <div className={styles.topic}>
-                                        <span>By</span>
-                                        <span className={styles.hashtag}>
-                                            @{post.user_id?.slice(0, 8)}
-                                        </span>
-                                    </div>
-                                </div>
-                                {post.image_url && (
-                                    <div className={styles.media}>
-                                        <div
-                                            className={styles.thumbnail}
-                                            style={{ backgroundImage: `url(${post.image_url})` }}
-                                        ></div>
-                                    </div>
-                                )}
-                            </div>
-                            {latestPosts.indexOf(post) < latestPosts.length - 1 && (
-                                <div className={styles.divider} />
-                            )}
-                        </React.Fragment>
-                    ))
+                {searchLoading && (
+                    <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>…</span>
                 )}
             </div>
 
-            {/* <div className={styles.followSection}>
-                <h3>Who to follow</h3>
-                {whoToFollow.map((user, index) => (
-                    <React.Fragment key={index}>
-                        <div className={styles.profile}>
-                            <div className={styles.avatar}>
-                                {user.avatar}
-                            </div>
-                            <div className={styles.userInfo}>
-                                <div className={styles.name}>{user.name}</div>
-                                <div className={styles.username}>@{user.username}</div>
-                            </div>
-                            <button className={styles.followButton}>Follow</button>
+            {/* Search results */}
+            {showResults && (
+                <div className={styles.searchResultSection}>
+                    <h3>Results</h3>
+                    {searchError ? (
+                        <div className={styles.errorMessage}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                />
+                                <path
+                                    d="M12 8v4M12 16h.01"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                            <p>{searchError}</p>
                         </div>
-                        {index < whoToFollow.length - 1 && <div className={styles.divider} />}
-                    </React.Fragment>
-                ))}
-            </div> */}
+                    ) : (
+                        (searchResults || []).map((post, i) => (
+                            <React.Fragment key={post.id}>
+                                <div
+                                    className={styles.newsItem}
+                                    onClick={() => handlePostClick(post.id)}
+                                >
+                                    <div className={styles.text}>
+                                        <div className={styles.topic}>
+                                            <span className={styles.hashtag}>
+                                                @{post.username || post.user_id?.slice(0, 8)}
+                                            </span>
+                                            <span className={styles.dot}>·</span>
+                                            <span className={styles.time}>
+                                                {formatRelativeTime(
+                                                    post.created_at || new Date().toISOString(),
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className={styles.title}>
+                                            {post.content.length > 100
+                                                ? post.content.substring(0, 100) + '...'
+                                                : post.content}
+                                        </div>
+                                    </div>
+                                    {post.image_url && (
+                                        <div className={styles.media}>
+                                            <div
+                                                className={styles.thumbnail}
+                                                style={{
+                                                    backgroundImage: `url(${post.image_url})`,
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                {i < (searchResults?.length ?? 1) - 1 && (
+                                    <div className={styles.divider} />
+                                )}
+                            </React.Fragment>
+                        ))
+                    )}
+                </div>
+            )}
+
+            {/* Latest posts widget — hidden while searching */}
+            {!showResults && (
+                <div className={styles.newsSection}>
+                    <h3>Latest posts</h3>
+                    {latestPosts.length === 0 ? (
+                        <div className={styles.emptyMessage}>No posts yet</div>
+                    ) : (
+                        latestPosts.map((post, i) => (
+                            <React.Fragment key={post.id}>
+                                <div
+                                    className={styles.newsItem}
+                                    onClick={() => handlePostClick(post.id)}
+                                >
+                                    <div className={styles.text}>
+                                        <div className={styles.topic}>
+                                            <span>Post</span>
+                                            <span className={styles.dot}>·</span>
+                                            <span className={styles.time}>
+                                                {formatRelativeTime(
+                                                    post.created_at || new Date().toISOString(),
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className={styles.title}>
+                                            {post.content.length > 100
+                                                ? post.content.substring(0, 100) + '...'
+                                                : post.content}
+                                        </div>
+                                        <div className={styles.topic}>
+                                            <span>By</span>
+                                            <span className={styles.hashtag}>
+                                                @{post.username || post.user_id?.slice(0, 8)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {post.image_url && (
+                                        <div className={styles.media}>
+                                            <div
+                                                className={styles.thumbnail}
+                                                style={{
+                                                    backgroundImage: `url(${post.image_url})`,
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                {i < latestPosts.length - 1 && <div className={styles.divider} />}
+                            </React.Fragment>
+                        ))
+                    )}
+                </div>
+            )}
 
             <div className={styles.footer}>
                 Terms of Service Privacy Policy Cookie Policy Ads info More © 2026 PolyTweet, Inc.
