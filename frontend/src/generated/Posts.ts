@@ -20,6 +20,9 @@ import {
     InternalFeaturesPostsTransportHttpDeletePostDTOResponse,
     InternalFeaturesPostsTransportHttpGetLastWeekPostsDTOResponse,
     InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse,
+    InternalFeaturesPostsTransportHttpGetPostsByUserDTOResponse,
+    InternalFeaturesPostsTransportHttpSearchPostsDTOResponse,
+    InternalFeaturesPostsTransportHttpUploadImageDTOResponse,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
@@ -82,6 +85,84 @@ export class Posts<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
             path: `/posts/create`,
             method: 'POST',
             body: request,
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Посты пользователей, на которых подписан авторизаванный юзер
+     *
+     * @tags Posts
+     * @name FollowList
+     * @summary Посты пользователей, на которых подписан авторизаванный юзер
+     * @request GET:/posts/follow
+     */
+    followList = (params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesPostsTransportHttpGetPostsByUserDTOResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/posts/follow`,
+            method: 'GET',
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Загрузить изображение в SeaweedFS и возвращает URL
+     *
+     * @tags Posts
+     * @name ImageCreate
+     * @summary Загрузить изображение для поста
+     * @request POST:/posts/image
+     */
+    imageCreate = (
+        data: {
+            /** Файл изображения */
+            file: File;
+        },
+        params: RequestParams = {},
+    ) =>
+        this.request<
+            InternalFeaturesPostsTransportHttpUploadImageDTOResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/posts/image`,
+            method: 'POST',
+            body: data,
+            type: ContentType.FormData,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Ищет посты по словам, переданным в query
+     *
+     * @tags Posts
+     * @name SearchList
+     * @summary Поиск постов по словам
+     * @request GET:/posts/search
+     */
+    searchList = (
+        query: {
+            /**
+             * Ключевые слова
+             * @minLength 1
+             * @maxLength 100
+             */
+            query: string;
+        },
+        params: RequestParams = {},
+    ) =>
+        this.request<
+            InternalFeaturesPostsTransportHttpSearchPostsDTOResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/posts/search`,
+            method: 'GET',
+            query: query,
             type: ContentType.Json,
             format: 'json',
             ...params,

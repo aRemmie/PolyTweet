@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/useAuthStore';
 import { usePostStore } from '../../../stores/usePostStore';
@@ -125,15 +125,22 @@ const LeftPanel: React.FC = () => {
     const navigate = useNavigate();
     const logout = useAuthStore((state) => state.logout);
     const email = useAuthStore((state) => state.email);
+    const username = useAuthStore((state) => state.username);
     const userId = useAuthStore((state) => state.userId);
+    const isAuth = useAuthStore((state) => state.isAuth);
     const { createPost } = usePostStore();
-    //const [activeTab, setActiveTab] = useState('home');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
 
-    const { addPostToState, profilesCache } = useProfileStore();
+    const { addPostToState, profile, fetchProfile } = useProfileStore();
 
     const location = useLocation();
+
+    useEffect(() => {
+        if (isAuth && userId && !profile) {
+            fetchProfile(userId);
+        }
+    }, [isAuth, userId]);
 
     const navItems: NavItem[] = [
         {
@@ -163,7 +170,6 @@ const LeftPanel: React.FC = () => {
 
     const handleNavigation = (id: string, path?: string, disabled?: boolean) => {
         if (disabled) return;
-        //setActiveTab(id);
         if (path) navigate(path);
     };
 
@@ -193,6 +199,11 @@ const LeftPanel: React.FC = () => {
             setIsCreating(false);
         }
     };
+
+    const displayName = profile?.username || username || 'User';
+    const displayHandle = profile?.id?.slice(0, 8) || userId?.slice(0, 8) || 'user';
+    const avatarUrl = profile?.avatar_url;
+    const avatarFallback = (email?.[0] || displayName[0] || 'U').toUpperCase();
 
     return (
         <>
@@ -231,21 +242,11 @@ const LeftPanel: React.FC = () => {
 
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
-                        {(profilesCache[userId] ? (
-                            <img
-                                className={styles.avatar}
-                                src={profilesCache[userId].avatar_url}
-                                alt={'avatar'}
-                            />
-                        ) : (
-                            ''
-                        )) ||
-                            email?.[0]?.toUpperCase() ||
-                            'U'}
+                        {avatarUrl ? <img src={avatarUrl} alt="avatar" /> : avatarFallback}
                     </div>
                     <div className={styles.userDetails}>
-                        <div className={styles.name}>{email?.split('@')[0] || 'User'}</div>
-                        <div className={styles.username}>@{userId?.slice(0, 8) || 'user'}</div>
+                        <div className={styles.name}>{displayName}</div>
+                        <div className={styles.username}>@{displayHandle}</div>
                     </div>
                     <button onClick={handleLogout} className={styles.moreButton}>
                         <MoreIcon />

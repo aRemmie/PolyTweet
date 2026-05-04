@@ -21,6 +21,12 @@
   flex-direction: column;
   position: relative;
   flex-shrink: 1;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    border-left: none;
+    border-right: none;
+  }
 }
 
 .header {
@@ -142,6 +148,17 @@
 
   &:hover {
     background-color: var(--bg-hover);
+  }
+}
+
+.followingButton {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+
+  &:hover {
+    background: var(--text-secondary);
+    border-color: var(--text-secondary);
   }
 }
 

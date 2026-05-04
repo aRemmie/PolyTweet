@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TextField from '../shared/TextField/TextField';
 import Button from '../shared/Button/Button';
 import { useAuthStore } from '../../stores/useAuthStore';
@@ -13,8 +13,8 @@ interface SigninFormValues {
 }
 
 const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Email is Required'),
-    password: Yup.string().required('Password is Required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    password: Yup.string().required('Password is required'),
 });
 
 const SigninForm = () => {
@@ -31,10 +31,17 @@ const SigninForm = () => {
         onSubmit: async (values: SigninFormValues) => {
             try {
                 await login(values.email, values.password);
-                toast.success('Login successful!');
+                toast.success('Welcome back!');
                 navigate('/feed');
-            } catch (error) {
-                toast.error('Login failed.');
+            } catch (error: any) {
+                const status = error.response?.status;
+                if (status === 401 || status === 403) {
+                    toast.error('Invalid email or password');
+                } else if (status === 404) {
+                    toast.error('Account not found');
+                } else {
+                    toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+                }
             }
         },
     });

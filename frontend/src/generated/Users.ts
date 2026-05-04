@@ -13,12 +13,53 @@
 import {
     GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError,
     GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError,
+    InternalFeaturesAuthTransportHttpFollowResponse,
     InternalFeaturesAuthTransportHttpProfileResponse,
     InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse,
 } from './data-contracts';
 import { ContentType, HttpClient, RequestParams } from './http-client';
 
 export class Users<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+    /**
+     * @description Получить профиль пользователя с постами по JWT
+     *
+     * @tags Profile
+     * @name MeProfileList
+     * @summary Получить профиль пользователя по JWT
+     * @request GET:/users/me/profile
+     */
+    meProfileList = (params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesAuthTransportHttpProfileResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/users/me/profile`,
+            method: 'GET',
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Подписаться авторизованным пользователем на другого пользователя по UserId
+     *
+     * @tags Profile
+     * @name FollowCreate
+     * @summary Подписаться на пользователя
+     * @request POST:/users/{UserId}/follow
+     */
+    followCreate = (userId: string, params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesAuthTransportHttpFollowResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/users/${userId}/follow`,
+            method: 'POST',
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
     /**
      * @description Ищет посты пользователя по ID с поддержкой пагинации через параметры page и pageSize.
      *
@@ -74,6 +115,26 @@ export class Users<SecurityDataType = unknown> extends HttpClient<SecurityDataTy
         >({
             path: `/users/${userId}/profile`,
             method: 'GET',
+            type: ContentType.Json,
+            format: 'json',
+            ...params,
+        });
+    /**
+     * @description Отписаться авторизованным пользователем от другого пользователя по UserId
+     *
+     * @tags Profile
+     * @name UnfollowCreate
+     * @summary Отписаться от пользователя
+     * @request POST:/users/{UserId}/unfollow
+     */
+    unfollowCreate = (userId: string, params: RequestParams = {}) =>
+        this.request<
+            InternalFeaturesAuthTransportHttpFollowResponse,
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainCustomError
+            | GithubComTryingmyb3StPolyTweetInternalCoreDomainInternalError
+        >({
+            path: `/users/${userId}/unfollow`,
+            method: 'POST',
             type: ContentType.Json,
             format: 'json',
             ...params,

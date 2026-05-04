@@ -36,6 +36,7 @@ export interface GithubComTryingmyb3StPolyTweetInternalCoreDomainPagination {
 }
 
 export interface GithubComTryingmyb3StPolyTweetInternalCoreDomainPost {
+    avatar_url?: string;
     /**
      * @minLength 1
      * @maxLength 280
@@ -48,6 +49,11 @@ export interface GithubComTryingmyb3StPolyTweetInternalCoreDomainPost {
     parent_id?: string;
     reply_to?: string;
     user_id: string;
+    /**
+     * @minLength 4
+     * @maxLength 15
+     */
+    username?: string;
 }
 
 export interface InternalFeaturesAuthTransportHttpDummyLoginDTO {
@@ -59,6 +65,11 @@ export interface InternalFeaturesAuthTransportHttpDummyLoginDTOResponse {
     token?: string;
 }
 
+export interface InternalFeaturesAuthTransportHttpFollowResponse {
+    /** @example "success" */
+    message?: string;
+}
+
 export interface InternalFeaturesAuthTransportHttpLoginDTO {
     /** @example "useremail@gmail.com" */
     email?: string;
@@ -68,22 +79,30 @@ export interface InternalFeaturesAuthTransportHttpLoginDTO {
 
 export interface InternalFeaturesAuthTransportHttpLoginDTOResponse {
     token?: string;
+    user_id?: string;
+    username?: string;
 }
 
 export interface InternalFeaturesAuthTransportHttpPostResponse {
     /** @example "24b6b463-266f-4916-b199-f833e6e334ce" */
     id?: string;
+    /** @example "m4rkek" */
+    username?: string;
     /** @example "..." */
     content?: string;
     /** @example "bba83b30-a3ba-4fa8-a6de-79c27b3f5946" */
     user_id?: string;
     /** @example "timestamp" */
     created_at?: string;
+    /** @example "http://localhost:8333/6,0307364665" */
+    avatar_url?: string;
 }
 
 export interface InternalFeaturesAuthTransportHttpProfileResponse {
     /** @example "http://localhost:8333/6,0307364665" */
     id?: string;
+    /** @example "m4rkek" */
+    username?: string;
     /** @example "lol@gmail.com" */
     email?: string;
     /** @example "admin" */
@@ -95,11 +114,15 @@ export interface InternalFeaturesAuthTransportHttpProfileResponse {
     /** @example "timestamp" */
     created_at?: string;
     posts?: InternalFeaturesAuthTransportHttpPostResponse[];
+    follows?: string[];
+    followed_by?: string[];
 }
 
 export interface InternalFeaturesAuthTransportHttpRegisterDTO {
     /** @example "useremail@gmail.com" */
     email?: string;
+    /** @example "m4rkek" */
+    username?: string;
     /** @example "supersecretpass" */
     password?: string;
     /** @example "admin" */
@@ -109,6 +132,8 @@ export interface InternalFeaturesAuthTransportHttpRegisterDTO {
 export interface InternalFeaturesAuthTransportHttpRegisterDTOResponse {
     /** @example "3fa85f64-5717-4562-b3fc-2c963f66afa6" */
     id?: string;
+    /** @example "m4rkek" */
+    username?: string;
     /** @example "useremail@gmail.com" */
     email?: string;
     password?: string;
@@ -126,6 +151,7 @@ export interface InternalFeaturesAuthTransportHttpUpdateProfileRequest {
 }
 
 export interface InternalFeaturesAuthTransportHttpUpdateProfileResp {
+    /** @example "updated successfully" */
     message?: string;
 }
 
@@ -190,6 +216,8 @@ export interface InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse {
     id?: string;
     /** @example "3fa85f64-5717-4562-b3fc-2c963f66afa6" */
     user_id?: string;
+    /** @example "m4rkek" */
+    username?: string;
     /** @example "Hello, world!" */
     content?: string;
     /** @example 0 */
@@ -200,6 +228,22 @@ export interface InternalFeaturesPostsTransportHttpGetPostByIdDTOResponse {
     reply_to?: string;
     /** @example "https://example.com/image.jpg" */
     image_url?: string;
+    /** @example "https://example.com/image.jpg" */
+    avatar_url?: string;
     /** @example "2026-03-25T12:00:41.267Z" */
     created_at?: string;
+}
+
+export interface InternalFeaturesPostsTransportHttpGetPostsByUserDTOResponse {
+    pagination?: GithubComTryingmyb3StPolyTweetInternalCoreDomainPagination;
+    posts?: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost[];
+}
+
+export interface InternalFeaturesPostsTransportHttpSearchPostsDTOResponse {
+    posts?: GithubComTryingmyb3StPolyTweetInternalCoreDomainPost[];
+}
+
+export interface InternalFeaturesPostsTransportHttpUploadImageDTOResponse {
+    /** @example "https://example.com/image.jpg" */
+    image_url?: string;
 }

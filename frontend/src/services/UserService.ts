@@ -4,6 +4,7 @@ import type {
     InternalFeaturesAuthTransportHttpUpdateProfileRequest,
     InternalFeaturesAuthTransportHttpUpdateProfileResp,
     InternalFeaturesAuthTransportHttpUploadAvatarResponse,
+    InternalFeaturesAuthTransportHttpFollowResponse,
     GithubComTryingmyb3StPolyTweetInternalCoreDomainPost,
 } from '../generated/data-contracts';
 
@@ -22,6 +23,25 @@ export class UserService {
         userId: string,
     ): Promise<InternalFeaturesAuthTransportHttpProfileResponse> {
         const response = await $api.get(`/users/${userId}/profile`);
+        return response.data;
+    }
+
+    static async getMyProfile(): Promise<InternalFeaturesAuthTransportHttpProfileResponse> {
+        const response = await $api.get('/users/me/profile');
+        return response.data;
+    }
+
+    static async followUser(
+        userId: string,
+    ): Promise<InternalFeaturesAuthTransportHttpFollowResponse> {
+        const response = await $api.post(`/users/${userId}/follow`);
+        return response.data;
+    }
+
+    static async unfollowUser(
+        userId: string,
+    ): Promise<InternalFeaturesAuthTransportHttpFollowResponse> {
+        const response = await $api.post(`/users/${userId}/unfollow`);
         return response.data;
     }
 

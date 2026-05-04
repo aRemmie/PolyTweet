@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Button from '../../shared/Button/Button';
+import { PostService } from '@services/PostService';
 import styles from './CreatePostForm.module.scss';
 
 interface CreatePostFormProps {
@@ -15,17 +16,49 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({
 }) => {
     const [content, setContent] = useState('');
     const [imageUrl, setImageUrl] = useState('');
-    const [showImageInput, setShowImageInput] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // local preview
+        const objectUrl = URL.createObjectURL(file);
+        setImagePreview(objectUrl);
+
+        try {
+            setIsUploading(true);
+            const result = await PostService.uploadImage(file);
+            setImageUrl(result.image_url || '');
+        } catch (err) {
+            console.error('Image upload failed:', err);
+            setImagePreview(null);
+            setImageUrl('');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImagePreview(null);
+        setImageUrl('');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!content.trim() || isLoading) return;
+        if (!content.trim() || isLoading || isUploading) return;
 
         await onSubmit(content.trim(), imageUrl || undefined);
         setContent('');
         setImageUrl('');
-        setShowImageInput(false);
+        setImagePreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
+
+    const isBusy = isLoading || isUploading;
 
     return (
         <form className={styles.createPostForm} onSubmit={handleSubmit}>
@@ -41,24 +74,42 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({
                 <div className={styles.charCount}>{content.length}/280</div>
             </div>
 
-            {showImageInput && (
-                <div className={styles.imageInput}>
-                    <input
-                        type="text"
-                        placeholder="Enter image URL..."
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        className={styles.urlInput}
-                    />
+            {imagePreview && (
+                <div className={styles.imagePreview}>
+                    <img src={imagePreview} alt="Preview" />
+                    {isUploading && <div className={styles.uploadingOverlay}>Uploading…</div>}
+                    <button
+                        type="button"
+                        className={styles.removeImage}
+                        onClick={handleRemoveImage}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M18 6L6 18M6 6L18 18"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                    </button>
                 </div>
             )}
 
             <div className={styles.actions}>
                 <div className={styles.toolbar}>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
                     <button
                         type="button"
                         className={styles.toolbarButton}
-                        onClick={() => setShowImageInput(!showImageInput)}
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        title="Attach image"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <rect
@@ -81,12 +132,8 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({
                         </svg>
                     </button>
                 </div>
-                <Button
-                    type="submit"
-                    //variant="primary"
-                    disabled={!content.trim() || isLoading}
-                >
-                    {isLoading ? 'Posting...' : 'Post'}
+                <Button type="submit" disabled={!content.trim() || isBusy}>
+                    {isUploading ? 'Uploading…' : isLoading ? 'Posting…' : 'Post'}
                 </Button>
             </div>
         </form>

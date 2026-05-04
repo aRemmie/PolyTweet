@@ -17,44 +17,68 @@ const ProfilePage: React.FC = () => {
     const currentUserId = useAuthStore((state) => state.userId);
     const isAuth = useAuthStore((state) => state.isAuth);
     const deletePost = usePostStore((state) => state.deletePost);
-    const profile = useProfileStore((state) => state.profile);
+
     const {
+        viewedProfile, // ← data for the page being viewed
         userPosts,
         totalPosts,
         isLoading,
         fetchProfile,
         fetchUserPosts,
         clearProfile,
-        profilesCache,
         updateProfile,
+        followUser,
+        unfollowUser,
+        fetchMyFollows,
+        follows,
     } = useProfileStore();
+
     const [isEditOpen, setIsEditOpen] = useState(false);
 
-    const user = profilesCache[currentUserId];
     const targetUserId = id || currentUserId;
     const isOwnProfile = targetUserId === currentUserId;
+    const isFollowing = follows.includes(targetUserId || '');
 
     useEffect(() => {
         if (targetUserId) {
             fetchProfile(targetUserId);
             fetchUserPosts(targetUserId);
         }
+        fetchMyFollows();
 
         return () => clearProfile();
     }, [targetUserId, isAuth]);
+
+    const handleFollow = async () => {
+        if (!targetUserId) return;
+        try {
+            if (isFollowing) {
+                await unfollowUser(targetUserId);
+                toast.success('Unfollowed');
+            } else {
+                await followUser(targetUserId);
+                toast.success('Following!');
+            }
+        } catch {
+            toast.error('Action failed');
+        }
+    };
 
     const handleDeletePost = async (id: string) => {
         if (window.confirm('Delete this post?')) {
             try {
                 await deletePost(id);
                 toast.success('Post deleted');
-            } catch (error) {
+            } catch {
                 toast.error('Failed to delete post');
             }
         }
     };
 
     if (!isAuth) return null;
+
+    // Use viewedProfile for page rendering
+    const profile = viewedProfile;
 
     return (
         <div className={styles.profilePage}>
@@ -71,7 +95,9 @@ const ProfilePage: React.FC = () => {
                         </svg>
                     </button>
                     <div className={styles.headerInfo}>
-                        <h1>{profile?.email?.split('@')[0] || 'Loading...'}</h1>
+                        <h1>
+                            {profile?.username || profile?.email?.split('@')[0] || 'Loading...'}
+                        </h1>
                         <span>{totalPosts} posts</span>
                     </div>
                 </div>
@@ -81,39 +107,51 @@ const ProfilePage: React.FC = () => {
                         <div className={styles.loading}>Loading...</div>
                     ) : (
                         <>
-                            <div className={styles.coverPhoto}></div>
+                            <div className={styles.coverPhoto} />
                             <div className={styles.profileInfo}>
                                 <div className={styles.avatarSection}>
                                     <div className={styles.avatar}>
                                         {profile?.avatar_url ? (
                                             <img src={profile.avatar_url} alt="avatar" />
                                         ) : (
-                                            profile?.email?.[0]?.toUpperCase()
+                                            (profile?.username ||
+                                                profile?.email)?.[0]?.toUpperCase()
                                         )}
                                     </div>
-                                    {isOwnProfile && (
+                                    {isOwnProfile ? (
                                         <button
                                             className={styles.editButton}
                                             onClick={() => setIsEditOpen(true)}
                                         >
                                             Edit profile
                                         </button>
+                                    ) : (
+                                        <button
+                                            className={`${styles.editButton} ${isFollowing ? styles.followingButton : ''}`}
+                                            onClick={handleFollow}
+                                        >
+                                            {isFollowing ? 'Unfollow' : 'Follow'}
+                                        </button>
                                     )}
-                                    <EditProfileModal
-                                        isOpen={isEditOpen}
-                                        onClose={() => setIsEditOpen(false)}
-                                        initialBio={profile?.bio || ''}
-                                        initialAvatar={profile?.avatar_url}
-                                        onSave={async (bio, file) => {
-                                            await updateProfile(currentUserId, bio, file);
-                                            fetchProfile(targetUserId);
-                                        }}
-                                    />
+                                    {isOwnProfile && (
+                                        <EditProfileModal
+                                            isOpen={isEditOpen}
+                                            onClose={() => setIsEditOpen(false)}
+                                            initialBio={profile?.bio || ''}
+                                            initialAvatar={profile?.avatar_url}
+                                            onSave={async (bio, file) => {
+                                                await updateProfile(currentUserId, bio, file);
+                                                fetchProfile(targetUserId);
+                                            }}
+                                        />
+                                    )}
                                 </div>
                                 <div className={styles.userDetails}>
-                                    <h2 className={styles.name}>{profile?.email?.split('@')[0]}</h2>
+                                    <h2 className={styles.name}>
+                                        {profile?.username || profile?.email?.split('@')[0]}
+                                    </h2>
                                     <span className={styles.username}>
-                                        @{currentUserId?.slice(0, 8)}
+                                        @{profile?.id?.slice(0, 8) || targetUserId?.slice(0, 8)}
                                     </span>
                                     {profile?.bio && <p className={styles.bio}>{profile.bio}</p>}
                                 </div>
